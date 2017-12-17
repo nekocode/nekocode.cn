@@ -5,4 +5,4 @@ resume_pdf:
 	cp resume/resume.pdf static/
 
 blog:
-	hugo server
+	hugo
