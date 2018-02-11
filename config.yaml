@@ -19,6 +19,10 @@ menu:
       url: "/resume.pdf"
       weight: 2
 
+    - name: "Project Gallery"
+      url: "/project-gallery"
+      weight: 2
+
 params:
   description: "Personal blog of Mark Yueng."
   footer: "&copy; Mark Yueng 2017 | [Source code](https://github.com/nekocode/nekocode.cn/)"
