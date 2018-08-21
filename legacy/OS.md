@@ -6,25 +6,50 @@ OS X 的生活
 - [Homebrew Cask](http://caskroom.io)
 - [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh)
 - [Monokai Theme](https://github.com/stephenway/monokai.terminal)
+- [Spectacle](https://www.spectacleapp.com/)
 
+### VSCode
 
-### Notice
-- 使用 brew 安装 Python3 时应该使用 `brew install python --framework`。因为 Framework 安装模式更加独立，不会冲突链接到系统原先版本的 Python。
+> [官网](https://code.visualstudio.com/)
+> 
+> [How to run Visual Studio Code from Zsh on Mac OSX](http://kevgriffin.com/how-to-run-visual-studio-code-from-zsh-on-mac-osx/)
 
-- 安装 enjarify 时应该将脚本链接到 `/usr/local/bin/` 文件夹下，具体原因可查看 [stackexchange](http://apple.stackexchange.com/questions/196224/unix-ln-s-command-not-permitted-in-osx-el-capitan-beta3)
 ```
-ln -s $PWD/enjarify.sh /usr/local/bin/enjarify
+function vscode {  
+    if [[ $# = 0 ]]
+    then
+        open -a "Visual Studio Code"
+    else
+        local argPath="$1"
+        [[ $1 = /* ]] && argPath="$1" || argPath="$PWD/${1#./}"
+        open -a "Visual Studio Code" "$argPath"
+    fi
+}
+```
+
+### Python
+
+> [使用 pyenv 管理 Python 版本 ](http://einverne.github.io/post/2017/04/pyenv.html)
+
+```sh
+brew install pyenv
+pyenv init
+# 把命令拷贝到 .zshrc
+
+pyenv install 3.6.5
+pyenv global 3.6.5
 ```
 
 
 ### Note
-- [How to run Visual Studio Code from Zsh on Mac OSX](http://kevgriffin.com/how-to-run-visual-studio-code-from-zsh-on-mac-osx/)
 
 - 让 Finder 标题栏显示目录路径：
 ```
 defaults write com.apple.finder _FXShowPosixPathInTitle -bool YES 
 killall Finder
 ```
+
+- [Generating a new SSH key and adding it to the ssh-agent](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/)
 
 - 安装配置 MySQL
 ```
