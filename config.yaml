@@ -3,7 +3,7 @@ languageCode: "zh-CN"
 title: "杨凡"
 theme: "hugo-ivy"
 googleAnalytics: ""
-disqusShortname: ""
+disqusShortname: "nekocode"
 
 permalinks:
   post: "/post/:year/:month/:day/:slug/"
@@ -26,3 +26,4 @@ menu:
 params:
   description: "Personal blog of Mark Yueng."
   footer: "&copy; Mark Yueng 2017 | [Source code](https://github.com/nekocode/nekocode.cn/)"
+  disqusURL: "https://nekocode.cn"
