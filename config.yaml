@@ -1,29 +1,16 @@
 baseurl: "http://nekocode.github.io/"
 languageCode: "zh-CN"
 title: "杨凡"
-theme: "hugo-ivy"
-googleAnalytics: ""
+theme: "hugo-theme-one"
+googleAnalytics: "UA-129020994-1"
 disqusShortname: "nekocode"
-
-permalinks:
-  post: "/post/:year/:month/:day/:slug/"
-  note: "/note/:year/:month/:day/:slug/"
 
 menu:
   main:
-    - name: "Home"
-      url: "/"
+    - name: "About"
+      url: "about"
       weight: 1
 
-    - name: "Resume"
-      url: "/resume.pdf"
-      weight: 2
-
-    - name: "Project Gallery"
-      url: "/project-gallery"
-      weight: 2
-
 params:
-  description: "Personal blog of Mark Yueng."
-  footer: "&copy; Mark Yueng 2017 | [Source code](https://github.com/nekocode/nekocode.cn/)"
+  footer: " | <a href=\"https://github.com/nekocode/nekocode.cn/\">Source code</a>"
   disqusURL: "https://nekocode.cn"

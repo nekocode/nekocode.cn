@@ -1,9 +1,9 @@
 [submodule "resume"]
 	path = resume
 	url = git@github.com:nekocode/resume.git
-[submodule "themes/hugo-ivy"]
-	path = themes/hugo-ivy
-	url = git@github.com:yihui/hugo-ivy.git
 [submodule "project-gallery"]
 	path = project-gallery
 	url = https://github.com/nekocode/project-gallery
+[submodule "themes/hugo-theme-one"]
+	path = themes/hugo-theme-one
+	url = git@github.com:nekocode/hugo-theme-one.git
