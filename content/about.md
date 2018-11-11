@@ -9,4 +9,4 @@ date: 2018-11-11T01:15:00+08:00
 
 在看我的博客之前，本着严肃的态度在此声明，本人不保证所有发表言论的正确性，如有错误的地方，欢迎到 [{这里}](https://github.com/nekocode/nekocode.cn/issues) 提交你的看法。本博客所有文章欢迎转载，但请遵守 [{CC 协议}](https://creativecommons.org/licenses/by-nc-sa/3.0/)。
 
-你可以从这些链接了解我：[我的 Github<i class="icon-github-circled"></i>](https://github.com/nekocode), [我的项目画廊](https://nekocode.cn/project-gallery/), [我的简历](https://nekocode.cn/resume.pdf)
+你可以通过这些链接来更了解我：[我的 Github<i class="icon-github-circled"></i>](https://github.com/nekocode), [我的 Gists<i class="icon-github-circled"></i>](https://gist.github.com/nekocode), [我的项目画廊](https://nekocode.cn/project-gallery/), [我的简历](https://nekocode.cn/resume.pdf)
