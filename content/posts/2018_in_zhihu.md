@@ -43,7 +43,7 @@ tags:
 
 ![](/imgs/3.png)
 
-于是我参考了 Gradle 的设计，为这些代码提供了一个载体「Task」，并为载体间提供 `dependsOn()`、`finalizedBy()`、`beDependedOn()`、`beFinalizedBy()` 等方法来描述依赖关系。
+于是我参考了 Gradle 的设计，为这些代码提供了一个载体「Task」，并为载体间提供 `dependsOn()`、`finalizedBy()` 等方法来描述依赖关系。
 
 于是，这些启动 Task 最终可以梳理成一棵棵的依赖树：
 
