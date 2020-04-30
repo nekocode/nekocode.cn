@@ -65,6 +65,8 @@ export class Character extends PIXI.AnimatedSprite {
   public update() {
     this.tilePosition.x = this.targetTilePosition.x;
     this.tilePosition.y = this.targetTilePosition.y;
+
+    // Move sprite
     this.position = this.getActualPosition();
   }
 

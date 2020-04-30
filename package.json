@@ -23,7 +23,9 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
+    "@types/pathfinding": "0.0.4",
     "path": "^0.12.7",
+    "pathfinding": "^0.4.18",
     "pixi.js": "^5.2.3"
   }
 }
