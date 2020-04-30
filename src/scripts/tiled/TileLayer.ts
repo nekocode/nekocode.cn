@@ -12,7 +12,7 @@ export class TileLayer extends PIXI.Container {
   private tiles: Tile[] = [];
 
   // Collision related
-  private collision?: PF.Grid;
+  private pfGrid?: PF.Grid;
 
   constructor(
     public data: ILayerData,
@@ -26,14 +26,14 @@ export class TileLayer extends PIXI.Container {
     this.alpha = data.opacity;
 
     if (this.isCollision) {
-      this.collision = new PF.Grid(data.width, data.height);
+      this.pfGrid = new PF.Grid(data.width, data.height);
     }
     this.resolveGids();
     this.create();
   }
 
-  public getCollision() {
-    return this.collision?.clone();
+  public getPFGrid() {
+    return this.pfGrid?.clone();
   }
 
   private create() {
@@ -42,10 +42,10 @@ export class TileLayer extends PIXI.Container {
         const i = x + y * this.data.width;
         const gid = this.data.data[i];
 
-        if (this.collision != null) {
+        if (this.pfGrid != null) {
           if (gid > 0) {
             // Set collision position
-            this.collision.setWalkableAt(x, y, false);
+            this.pfGrid.setWalkableAt(x, y, false);
           }
           // Skip below logic
           continue;

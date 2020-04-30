@@ -7,13 +7,17 @@ export class Game {
   private me: Character;
   private cursor: PIXI.Sprite;
   private selection = new PIXI.Graphics();
-  private collision?: PF.Grid;
+
+  // Path finding related
+  private pfGrid: PF.Grid;
+  private pf = new PF.AStarFinder();
 
   constructor(private app: PIXI.Application, private map: TiledMap) {
     app.ticker.add((delta) => this.update(delta));
 
     // Add map
-    this.collision = map.collisionLayer?.getCollision();
+    this.pfGrid =
+      map.collisionLayer?.getPFGrid() ?? new PF.Grid(map.width, map.height);
     app.stage.addChild(map);
 
     // Add mouse selection rect
@@ -47,9 +51,17 @@ export class Game {
     map.interactive = true;
     map.on("pointerdown", () => {
       const { tileX, tileY } = this.getMousePosition();
-      if (this.isWalkableAt(tileX, tileY)) {
-        this.me.targetTilePosition.x = tileX;
-        this.me.targetTilePosition.y = tileY;
+
+      if (this.pfGrid.isWalkableAt(tileX, tileY)) {
+        // Find path to click position
+        const path = this.pf.findPath(
+          this.me.tilePosition.x,
+          this.me.tilePosition.y,
+          tileX,
+          tileY,
+          this.pfGrid.clone()
+        );
+        this.me.movementPath = path as [number, number][];
       }
     });
   }
@@ -76,17 +88,13 @@ export class Game {
     this.cursor.y = y;
 
     // Update selection position
-    if (this.isWalkableAt(tileX, tileY)) {
+    if (this.pfGrid.isWalkableAt(tileX, tileY)) {
       this.selection.visible = true;
       this.selection.position.x = tileX * this.map.data.tilewidth;
       this.selection.position.y = tileY * this.map.data.tileheight;
     } else {
       this.selection.visible = false;
     }
-  }
-
-  private isWalkableAt(tileX: number, tileY: number) {
-    return this.collision?.isWalkableAt(tileX, tileY) ?? true;
   }
 
   private offsetX() {

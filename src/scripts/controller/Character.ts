@@ -13,7 +13,7 @@ export class Character extends PIXI.AnimatedSprite {
     baseTexture: PIXI.BaseTexture;
     characterWidth: number;
     characterHeight: number;
-    map: TiledMap,
+    map: TiledMap;
     tilePosition: PIXI.Point;
   }): Character {
     // Generate four directions of animation textures
@@ -47,14 +47,15 @@ export class Character extends PIXI.AnimatedSprite {
     );
   }
 
+  public movementPath: [number, number][] = [];
+
   private constructor(
     public animations: {
       [key in Direction]: PIXI.Texture[];
     },
     public direction: Direction,
     public map: TiledMap,
-    public tilePosition: PIXI.Point,
-    public targetTilePosition: PIXI.Point = tilePosition,
+    public tilePosition: PIXI.Point
   ) {
     super(animations[direction]);
 
@@ -63,8 +64,11 @@ export class Character extends PIXI.AnimatedSprite {
   }
 
   public update() {
-    this.tilePosition.x = this.targetTilePosition.x;
-    this.tilePosition.y = this.targetTilePosition.y;
+    if (this.movementPath.length > 0) {
+      const pos = this.movementPath.shift()!;
+      this.tilePosition.x = pos[0];
+      this.tilePosition.y = pos[1];
+    }
 
     // Move sprite
     this.position = this.getActualPosition();
@@ -73,7 +77,7 @@ export class Character extends PIXI.AnimatedSprite {
   public getActualPosition(): PIXI.Point {
     return new PIXI.Point(
       this.tilePosition.x * this.map.data.tilewidth,
-      this.tilePosition.y * this.map.data.tileheight,
+      this.tilePosition.y * this.map.data.tileheight
     );
   }
 }
