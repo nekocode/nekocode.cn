@@ -13,8 +13,8 @@ export class Game {
     app.stage.addChild(map);
 
     // Add mouse selection rect
-    this.selection.beginFill(0x66000000);
-    this.selection.drawRect(0, 0, map.data.tilewidth, map.data.tileheight);
+    this.selection.beginFill(0xFF000000);
+    this.selection.drawRoundedRect(0, 0, map.data.tilewidth, map.data.tileheight, 4);
     this.selection.endFill();
     this.selection.alpha = 0.3;
     (map.getChildAt(1) as PIXI.Container).addChild(this.selection);
