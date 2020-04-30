@@ -12,23 +12,28 @@ export class TileLayer extends PIXI.Container {
   private tiles: Tile[] = [];
 
   // Collision related
-  public collision: PF.Grid | undefined;
+  private collision?: PF.Grid;
 
   constructor(
     public data: ILayerData,
     private mapData: ITMXData,
-    private tileSets: TileSet[]
+    private tileSets: TileSet[],
+    private isCollision: boolean = false
   ) {
     super();
 
     this.visible = data.visible;
     this.alpha = data.opacity;
 
-    if (this.data.name === "Collisions") {
+    if (this.isCollision) {
       this.collision = new PF.Grid(data.width, data.height);
     }
     this.resolveGids();
     this.create();
+  }
+
+  public getCollision() {
+    return this.collision?.clone();
   }
 
   private create() {

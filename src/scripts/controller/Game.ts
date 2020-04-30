@@ -1,4 +1,5 @@
 import * as PIXI from "pixi.js";
+import * as PF from "pathfinding";
 import { Character } from "./Character";
 import { TiledMap } from "../tiled";
 
@@ -6,11 +7,13 @@ export class Game {
   private me: Character;
   private cursor: PIXI.Sprite;
   private selection = new PIXI.Graphics();
+  private collision?: PF.Grid;
 
   constructor(private app: PIXI.Application, private map: TiledMap) {
     app.ticker.add((delta) => this.update(delta));
 
     // Add map
+    this.collision = map.collisionLayer?.getCollision();
     app.stage.addChild(map);
 
     // Add mouse selection rect
@@ -44,8 +47,10 @@ export class Game {
     map.interactive = true;
     map.on("pointerdown", () => {
       const { tileX, tileY } = this.getMousePosition();
-      this.me.targetTilePosition.x = tileX;
-      this.me.targetTilePosition.y = tileY;
+      if (this.isWalkableAt(tileX, tileY)) {
+        this.me.targetTilePosition.x = tileX;
+        this.me.targetTilePosition.y = tileY;
+      }
     });
   }
 
@@ -71,8 +76,17 @@ export class Game {
     this.cursor.y = y;
 
     // Update selection position
-    this.selection.position.x = tileX * this.map.data.tilewidth;
-    this.selection.position.y = tileY * this.map.data.tileheight;
+    if (this.isWalkableAt(tileX, tileY)) {
+      this.selection.visible = true;
+      this.selection.position.x = tileX * this.map.data.tilewidth;
+      this.selection.position.y = tileY * this.map.data.tileheight;
+    } else {
+      this.selection.visible = false;
+    }
+  }
+
+  private isWalkableAt(tileX: number, tileY: number) {
+    return this.collision?.isWalkableAt(tileX, tileY) ?? true;
   }
 
   private offsetX() {
