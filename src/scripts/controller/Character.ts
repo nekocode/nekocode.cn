@@ -60,10 +60,9 @@ export class Character extends PIXI.AnimatedSprite {
   ) {
     super(animations[direction]);
 
-    this.anchor.set(0.5, 0.667);
+    // this.anchor.set(0, 0.4);
     this.animationSpeed = 0.1;
-    this.x = this.tileX * 32;
-    this.y = this.tileY * 32;
+    this.position = this.getActualPosition();
   }
 
   public getActualPosition(): PIXI.Point {

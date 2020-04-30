@@ -26,6 +26,7 @@ app.loader
   // Preload textures
   .add("texOverworld", "assets/map/overworld.png")
   .add("texMe", "assets/images/me_sprite.png")
+  .add("texCursor", "assets/images/cursor.png")
 
   // Add parser middleware of tiled map json file
   .use(TiledMap.middleware)
@@ -39,8 +40,8 @@ app.loader
       new PIXI.Filter(undefined, res.shaderBulgePinch.data, {
         texSize: [app.screen.width, app.screen.height],
         center: [app.screen.width / 2.0, app.screen.height / 2.0],
-        radius: (app.screen.width * 3.0) / 4.0,
-        strength: 0.05,
+        radius: (app.screen.height) / 1.0,
+        strength: 0.1,
       }),
       new PIXI.Filter(undefined, res.shaderBrightnessContrast.data, {
         brightness: -0.1,
