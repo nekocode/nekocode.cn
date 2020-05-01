@@ -71,8 +71,8 @@ export class Game {
         // Find path to click position
         const path = this.pf
           .findPath(
-            this.me.tilePosition.x,
-            this.me.tilePosition.y,
+            this.me.nextTilePos.x,
+            this.me.nextTilePos.y,
             tileX,
             tileY,
             this.pfGrid.clone()

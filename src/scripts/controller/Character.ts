@@ -48,33 +48,31 @@ export class Character extends PIXI.AnimatedSprite {
   }
 
   private movementPath: [number, number][] = [];
+  private lastFrame = 0;
+  private needStop = false;
+  public nextTilePos: PIXI.Point;
 
   private constructor(
-    public animations: {
+    private animations: {
       [key in Direction]: PIXI.Texture[];
     },
     private direction: Direction,
-    public map: TiledMap,
-    public tilePosition: PIXI.Point
+    private map: TiledMap,
+    private tilePosition: PIXI.Point
   ) {
     super(animations[direction]);
+    this.nextTilePos = tilePosition;
 
-    this.animationSpeed = 0.4;
+    this.animationSpeed = 0.3;
     this.position = this.getActualPosition();
     this.loop = true;
   }
-
-  private lastFrame = 0;
-  private nextTilePos?: PIXI.Point;
-  private needStop = false;
 
   public update(deltaTime: number) {
     super.update(deltaTime);
 
     // If need stop, stop at frame 0
     if (this.needStop && this.currentFrame == 0) {
-      // this.tilePosition = this.nextTilePos!;
-      this.nextTilePos = undefined;
       this.stop();
       this.needStop = false;
     }
@@ -87,18 +85,20 @@ export class Character extends PIXI.AnimatedSprite {
       }
 
       // Calculate next tile position
-      const p = this.nextTilePos!;
       this.tilePosition.x =
-        p.x - ((p.x - this.tilePosition.x) / 3) * (3 - this.currentFrame);
+        this.nextTilePos.x -
+        ((this.nextTilePos.x - this.tilePosition.x) / 3) *
+          (3 - this.currentFrame);
       this.tilePosition.y =
-        p.y - ((p.y - this.tilePosition.y) / 3) * (3 - this.currentFrame);
+        this.nextTilePos.y -
+        ((this.nextTilePos.y - this.tilePosition.y) / 3) *
+          (3 - this.currentFrame);
 
       // If whole of the animation finished
       if (this.currentFrame >= 3) {
         if (this.movementPath.length > 0) {
           // Need to move
-          const nextPos = this.movementPath.shift()!;
-          this.prepareMove(nextPos);
+          this.prepareMove(this.movementPath.shift()!);
         } else {
           // Need not to move any more
           this.needStop = true;
