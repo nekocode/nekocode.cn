@@ -4,6 +4,7 @@ import { Character } from "./Character";
 import { TiledMap } from "../tiled";
 
 export class Game {
+  private root: PIXI.Container;
   private me: Character;
 
   // Mouse related
@@ -18,10 +19,13 @@ export class Game {
   constructor(private app: PIXI.Application, private map: TiledMap) {
     app.ticker.add((delta) => this.update(delta));
 
+    this.root = new PIXI.Container();
+    app.stage.addChild(this.root);
+
     // Add map
     this.pfGrid =
       map.collisionLayer?.getPFGrid() ?? new PF.Grid(map.width, map.height);
-    app.stage.addChild(map);
+    this.root.addChild(map);
 
     const layer1 = map.getChildAt(1) as PIXI.Container;
 
@@ -61,7 +65,8 @@ export class Game {
     // Interactions
     map.interactive = true;
     map.on("pointertap", (event: PIXI.interaction.InteractionEvent) => {
-      const { tileX, tileY } = this.getMousePosition(event.data);
+      const pos = this.positionInRoot(this.getMousePosition(event.data));
+      const { tileX, tileY } = this.toTilePosition(pos);
 
       if (this.pfGrid.isWalkableAt(tileX, tileY)) {
         // Update selection position
@@ -90,18 +95,21 @@ export class Game {
 
   private updateCamera() {
     const pos = this.me.getActualPosition();
-    this.app.stage.pivot.x = pos.x;
-    this.app.stage.pivot.y = pos.y;
-    this.app.stage.position.x = this.offsetX();
-    this.app.stage.position.y = this.offsetY();
+    this.root.pivot.x = pos.x;
+    this.root.pivot.y = pos.y;
+    this.root.position.x = this.screenWidth() / 2 - this.map.data.tilewidth / 2;
+    this.root.position.y =
+      this.screenHeight() / 2 - this.map.data.tileheight / 2;
   }
 
   private updateMouse() {
-    const { x, y, tileX, tileY } = this.getMousePosition();
+    const mousePos = this.getMousePosition();
+    const posInRoot = this.positionInRoot(mousePos);
+    const { tileX, tileY } = this.toTilePosition(posInRoot);
 
     // Update cursor position
-    this.cursor.x = x;
-    this.cursor.y = y;
+    this.cursor.x = mousePos.x;
+    this.cursor.y = mousePos.y;
 
     // Update hover visibility and position
     if (!this.me.playing && this.pfGrid.isWalkableAt(tileX, tileY)) {
@@ -116,31 +124,33 @@ export class Game {
     this.selection.visible = this.me.playing;
   }
 
-  private offsetX() {
-    return this.app.renderer.width / 2 - this.map.data.tilewidth / 2;
+  private screenWidth() {
+    return this.app.renderer.width / this.app.stage.scale.x;
   }
 
-  private offsetY() {
-    return this.app.renderer.height / 2 - this.map.data.tileheight / 2;
+  private screenHeight() {
+    return this.app.renderer.height / this.app.stage.scale.y;
   }
 
-  private getMousePosition(
-    data?: PIXI.interaction.InteractionData
-  ): {
-    x: number;
-    y: number;
-    tileX: number;
-    tileY: number;
-  } {
-    const pos = (data ?? this.app.renderer.plugins.interaction.mouse).global;
-    const x =
-      (pos.x - this.offsetX()) / this.app.stage.scale.x +
-      this.app.stage.pivot.x;
-    const y =
-      (pos.y - this.offsetY()) / this.app.stage.scale.y +
-      this.app.stage.pivot.y;
-    const tileX = Math.floor(x / this.map.data.tilewidth);
-    const tileY = Math.floor(y / this.map.data.tileheight);
-    return { x, y, tileX, tileY };
+  private getMousePosition(data?: PIXI.interaction.InteractionData) {
+    const { x, y } = (
+      data ?? this.app.renderer.plugins.interaction.mouse
+    ).global;
+    return new PIXI.Point(
+      x / this.app.stage.scale.x,
+      y / this.app.stage.scale.y
+    );
+  }
+
+  private positionInRoot(pos: PIXI.Point) {
+    const xInRoot = pos.x - this.root.position.x + this.root.pivot.x;
+    const yInRoot = pos.y - this.root.position.y + this.root.pivot.y;
+    return new PIXI.Point(xInRoot, yInRoot);
+  }
+
+  private toTilePosition(pos: PIXI.Point) {
+    const tileX = Math.floor(pos.x / this.map.data.tilewidth);
+    const tileY = Math.floor(pos.y / this.map.data.tileheight);
+    return { tileX, tileY };
   }
 }
