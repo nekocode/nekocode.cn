@@ -14,12 +14,12 @@ rootElement.appendChild(app.view);
 // Stop application wait for load to finish
 app.stop();
 
-// Set pixi default scale mode before load resources
+// Set pixi settings before load resources
+PIXI.settings.ROUND_PIXELS = true;
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 app.loader
   .add("shaderSepia", "assets/shaders/sepia.frag")
-  .add("shaderBulgePinch", "assets/shaders/bulge_pinch.frag")
   .add("shaderBrightnessContrast", "assets/shaders/brightness_contrast.frag")
   .add("shaderVignette", "assets/shaders/vignette.frag")
   .add("shaderNoise", "assets/shaders/noise.frag")
@@ -41,12 +41,6 @@ app.loader
     app.stage.filters = [
       new PIXI.Filter(undefined, res.shaderSepia.data, {
         amount: 0.9,
-      }),
-      new PIXI.Filter(undefined, res.shaderBulgePinch.data, {
-        texSize: [app.screen.width, app.screen.height],
-        center: [app.screen.width / 2.0, app.screen.height / 2.0],
-        radius: app.screen.height / 1.0,
-        strength: 0.1,
       }),
       new PIXI.Filter(undefined, res.shaderBrightnessContrast.data, {
         brightness: -0.1,
@@ -84,7 +78,7 @@ app.loader
     // Set stage scale
     const updateScale = () => {
       const maxWh = Math.max(app.screen.width, app.screen.height);
-      app.stage.scale.set(maxWh / (19 * 32));
+      app.stage.scale.set(maxWh / (11 * 32));
     };
     updateScale();
     window.onresize = updateScale;
