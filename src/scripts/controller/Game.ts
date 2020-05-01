@@ -49,8 +49,8 @@ export class Game {
 
     // Interactions
     map.interactive = true;
-    map.on("pointerdown", () => {
-      const { tileX, tileY } = this.getMousePosition();
+    map.on("pointertap", (event: PIXI.interaction.InteractionEvent) => {
+      const { tileX, tileY } = this.getMousePosition(event.data);
 
       if (this.pfGrid.isWalkableAt(tileX, tileY)) {
         // Find path to click position
@@ -67,7 +67,6 @@ export class Game {
   }
 
   public update(_: number) {
-    this.me.update();
     this.updateCamera();
     this.updateMouse();
   }
@@ -105,13 +104,15 @@ export class Game {
     return this.app.renderer.height / 2 - this.map.data.tileheight / 2;
   }
 
-  private getMousePosition(): {
+  private getMousePosition(
+    data?: PIXI.interaction.InteractionData
+  ): {
     x: number;
     y: number;
     tileX: number;
     tileY: number;
   } {
-    const pos = this.app.renderer.plugins.interaction.mouse.global;
+    const pos = (data ?? this.app.renderer.plugins.interaction.mouse).global;
     const x =
       (pos.x - this.offsetX()) / this.app.stage.scale.x +
       this.app.stage.pivot.x;
