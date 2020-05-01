@@ -9,14 +9,12 @@ const rootElement: HTMLElement =
 const app = new PIXI.Application({
   resizeTo: rootElement,
 });
-rootElement.appendChild(app.view);
 
-// Stop application wait for load to finish
-app.stop();
-
-// Set pixi settings before load resources
+// Set pixi settings
 PIXI.settings.ROUND_PIXELS = true;
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+
+const loadingElement = rootElement.querySelector("#loading")!;
 
 app.loader
   .add("shaderSepia", "assets/shaders/sepia.frag")
@@ -36,7 +34,15 @@ app.loader
   // Add parser middleware of tiled map json file
   .use(TiledMap.middleware)
 
+  .on("progress", (loader: PIXI.Loader, _: PIXI.LoaderResource) => {
+    loader.resources;
+    loadingElement.innerHTML = "Loading " + loader.progress.toFixed(0) + "%...";
+  })
   .load((_: PIXI.Loader, res: any) => {
+    // Remove loading text
+    loadingElement.remove();
+    rootElement.appendChild(app.view);
+
     // Add filters
     app.stage.filters = [
       new PIXI.Filter(undefined, res.shaderSepia.data, {

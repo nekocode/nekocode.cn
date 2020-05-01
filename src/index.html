@@ -1,14 +1,41 @@
 <!DOCTYPE html>
 <html>
-<meta charset="utf-8">
 
 <head>
-  <link rel="stylesheet" href="css/style.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>neko 村</title>
+  <style type="text/css">
+    html {
+      cursor: none;
+    }
+
+    body {
+      background-color: #000;
+      margin: 0;
+    }
+
+    #game {
+      width: 100vw;
+      height: 100vh;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    #loading {
+      color: white;
+      font-size: 20px;
+    }
+  </style>
 </head>
 
 <body>
-  <div id="game"></div>
+  <div id="game">
+    <div id="loading">Loading...</div>
+  </div>
   <script src="bundle.js"></script>
 </body>
 
