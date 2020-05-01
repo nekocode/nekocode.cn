@@ -1,4 +1,6 @@
 import * as PIXI from "pixi.js";
+import { default as Sound } from "pixi-sound";
+import * as ifvisible from "ifvisible";
 import { TiledMap } from "./tiled";
 import { Game } from "./controller/Game";
 
@@ -22,6 +24,9 @@ app.loader
   .add("shaderVignette", "assets/shaders/vignette.frag")
   .add("shaderNoise", "assets/shaders/noise.frag")
   .add("mapMain", "assets/map/main.tiled.json")
+
+  // Sounds
+  .add("bgm", "assets/sounds/bgm.mp3")
 
   // Preload textures
   .add("texOverworld", "assets/map/overworld.png")
@@ -55,6 +60,26 @@ app.loader
         amount: 0.1,
       }),
     ];
+
+    // Play background music
+    let volumeAll = 1.0;
+    ifvisible.on("blur", function () {
+      volumeAll = 0.0;
+    });
+    ifvisible.on("focus", function () {
+      volumeAll = 1.0;
+    });
+    setInterval(() => {
+      if (Sound.volumeAll < volumeAll) {
+        const v = Sound.volumeAll + 0.05;
+        Sound.volumeAll = Math.min(v, 1.0);
+      } else if (Sound.volumeAll > volumeAll) {
+        const v = Sound.volumeAll - 0.05;
+        Sound.volumeAll = Math.max(v, 0.0);
+      }
+    }, 100);
+    Sound.volumeAll = 1.0;
+    Sound.play("bgm", { loop: true });
 
     // Set stage scale
     const updateScale = () => {
