@@ -1,7 +1,7 @@
 {
   "name": "nekocode.cn",
   "version": "0.1.0",
-  "description": "「neko 村」计划",
+  "description": "「neko 岛」计划",
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",
     "start": "webpack-dev-server --hot"
