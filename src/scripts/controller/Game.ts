@@ -5,8 +5,11 @@ import { TiledMap } from "../tiled";
 
 export class Game {
   private me: Character;
+
+  // Mouse related
   private cursor: PIXI.Sprite;
-  private selection = new PIXI.Graphics();
+  private hover: PIXI.Graphics;
+  private selection: PIXI.Graphics;
 
   // Path finding related
   private pfGrid: PF.Grid;
@@ -20,18 +23,26 @@ export class Game {
       map.collisionLayer?.getPFGrid() ?? new PF.Grid(map.width, map.height);
     app.stage.addChild(map);
 
-    // Add mouse selection rect
-    this.selection.beginFill(0xff000000);
-    this.selection.drawRoundedRect(
+    const layer1 = map.getChildAt(1) as PIXI.Container;
+
+    // Add mouse related rectangles
+    this.hover = new PIXI.Graphics();
+    this.hover.beginFill(0xff000000);
+    this.hover.drawRoundedRect(
       0,
       0,
       map.data.tilewidth,
       map.data.tileheight,
       4
     );
-    this.selection.endFill();
-    this.selection.alpha = 0.3;
-    (map.getChildAt(1) as PIXI.Container).addChild(this.selection);
+    this.hover.endFill();
+    this.hover.alpha = 0.2;
+    layer1.addChild(this.hover);
+
+    this.selection = this.hover.clone();
+    this.selection.alpha = 0.2;
+    this.selection.visible = false;
+    layer1.addChild(this.selection);
 
     // Add character
     this.me = Character.new({
@@ -41,7 +52,7 @@ export class Game {
       map: map,
       tilePosition: new PIXI.Point(13, 11),
     });
-    (map.getChildAt(1) as PIXI.Container).addChild(this.me);
+    layer1.addChild(this.me);
 
     // Add cursor
     this.cursor = PIXI.Sprite.from("texCursor");
@@ -53,6 +64,10 @@ export class Game {
       const { tileX, tileY } = this.getMousePosition(event.data);
 
       if (this.pfGrid.isWalkableAt(tileX, tileY)) {
+        // Update selection position
+        this.selection.position.x = tileX * this.map.data.tilewidth;
+        this.selection.position.y = tileY * this.map.data.tileheight;
+
         // Find path to click position
         const path = this.pf
           .findPath(
@@ -88,14 +103,17 @@ export class Game {
     this.cursor.x = x;
     this.cursor.y = y;
 
-    // Update selection position
-    if (this.pfGrid.isWalkableAt(tileX, tileY)) {
-      this.selection.visible = true;
-      this.selection.position.x = tileX * this.map.data.tilewidth;
-      this.selection.position.y = tileY * this.map.data.tileheight;
+    // Update hover visibility and position
+    if (!this.me.playing && this.pfGrid.isWalkableAt(tileX, tileY)) {
+      this.hover.visible = true;
+      this.hover.position.x = tileX * this.map.data.tilewidth;
+      this.hover.position.y = tileY * this.map.data.tileheight;
     } else {
-      this.selection.visible = false;
+      this.hover.visible = false;
     }
+
+    // Update selection visibility
+    this.selection.visible = this.me.playing;
   }
 
   private offsetX() {
