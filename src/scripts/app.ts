@@ -40,7 +40,7 @@ app.loader
       new PIXI.Filter(undefined, res.shaderBulgePinch.data, {
         texSize: [app.screen.width, app.screen.height],
         center: [app.screen.width / 2.0, app.screen.height / 2.0],
-        radius: (app.screen.height) / 1.0,
+        radius: app.screen.height / 1.0,
         strength: 0.1,
       }),
       new PIXI.Filter(undefined, res.shaderBrightnessContrast.data, {
@@ -57,7 +57,12 @@ app.loader
     ];
 
     // Set stage scale
-    app.stage.scale.set(2);
+    const updateScale = () => {
+      const maxWh = Math.max(app.screen.width, app.screen.height);
+      app.stage.scale.set(maxWh / (19 * 32));
+    };
+    updateScale();
+    window.onresize = updateScale;
 
     // Init map
     const map = res.mapMain.data() as TiledMap;
