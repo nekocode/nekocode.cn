@@ -54,14 +54,16 @@ export class Game {
 
       if (this.pfGrid.isWalkableAt(tileX, tileY)) {
         // Find path to click position
-        const path = this.pf.findPath(
-          this.me.tilePosition.x,
-          this.me.tilePosition.y,
-          tileX,
-          tileY,
-          this.pfGrid.clone()
-        );
-        this.me.movementPath = path as [number, number][];
+        const path = this.pf
+          .findPath(
+            this.me.tilePosition.x,
+            this.me.tilePosition.y,
+            tileX,
+            tileY,
+            this.pfGrid.clone()
+          )
+          .slice(1) as [number, number][];
+        this.me.setMovementPath(path);
       }
     });
   }

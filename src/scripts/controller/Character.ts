@@ -47,28 +47,65 @@ export class Character extends PIXI.AnimatedSprite {
     );
   }
 
-  public movementPath: [number, number][] = [];
+  private movementPath: [number, number][] = [];
 
   private constructor(
     public animations: {
       [key in Direction]: PIXI.Texture[];
     },
-    public direction: Direction,
+    private direction: Direction,
     public map: TiledMap,
     public tilePosition: PIXI.Point
   ) {
     super(animations[direction]);
 
-    this.animationSpeed = 0.1;
+    this.animationSpeed = 0.4;
     this.position = this.getActualPosition();
+    this.loop = true;
   }
 
-  public update() {
-    if (this.movementPath.length > 0) {
-      const pos = this.movementPath.shift()!;
-      this.tilePosition.x = pos[0];
-      this.tilePosition.y = pos[1];
+  private lastFrame = 0;
+  private nextTilePos?: PIXI.Point;
+  private needStop = false;
+
+  public update(deltaTime: number) {
+    super.update(deltaTime);
+
+    // If need stop, stop at frame 0
+    if (this.needStop && this.currentFrame == 0) {
+      // this.tilePosition = this.nextTilePos!;
+      this.nextTilePos = undefined;
+      this.stop();
+      this.needStop = false;
     }
+
+    // If frame changed
+    if (this.playing && this.lastFrame != this.currentFrame) {
+      if (this.currentFrame == 0) {
+        // Skip frame 0
+        this.gotoAndPlay(1);
+      }
+
+      // Calculate next tile position
+      const p = this.nextTilePos!;
+      this.tilePosition.x =
+        p.x - ((p.x - this.tilePosition.x) / 3) * (3 - this.currentFrame);
+      this.tilePosition.y =
+        p.y - ((p.y - this.tilePosition.y) / 3) * (3 - this.currentFrame);
+
+      // If whole of the animation finished
+      if (this.currentFrame >= 3) {
+        if (this.movementPath.length > 0) {
+          // Need to move
+          const nextPos = this.movementPath.shift()!;
+          this.prepareMove(nextPos);
+        } else {
+          // Need not to move any more
+          this.needStop = true;
+        }
+      }
+    }
+    this.lastFrame = this.currentFrame;
 
     // Move sprite
     this.position = this.getActualPosition();
@@ -79,5 +116,45 @@ export class Character extends PIXI.AnimatedSprite {
       this.tilePosition.x * this.map.data.tilewidth,
       this.tilePosition.y * this.map.data.tileheight
     );
+  }
+
+  public setMovementPath(movementPath: [number, number][]) {
+    this.movementPath = movementPath;
+    if (movementPath.length <= 0) {
+      return;
+    }
+
+    if (!this.playing) {
+      this.prepareMove(movementPath.shift()!);
+
+      // Start to play animation
+      this.gotoAndPlay(1);
+    }
+  }
+
+  private prepareMove(nextTilePos: [number, number]) {
+    let nextDirection = this.getNextDirection(nextTilePos[0], nextTilePos[1]);
+    if (nextDirection !== this.direction) {
+      this.textures = this.animations[(this.direction = nextDirection)];
+      // Reset to frame 1
+      this.gotoAndPlay(1);
+    }
+
+    // Set next position
+    this.nextTilePos = new PIXI.Point(nextTilePos[0], nextTilePos[1]);
+  }
+
+  private getNextDirection(nextTileX: number, nextTileY: number) {
+    let nextDirection = this.direction;
+    if (nextTileX > this.tilePosition.x) {
+      nextDirection = Direction.right;
+    } else if (nextTileX < this.tilePosition.x) {
+      nextDirection = Direction.left;
+    } else if (nextTileY > this.tilePosition.y) {
+      nextDirection = Direction.down;
+    } else if (nextTileY < this.tilePosition.y) {
+      nextDirection = Direction.up;
+    }
+    return nextDirection;
   }
 }
