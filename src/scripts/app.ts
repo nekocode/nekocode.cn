@@ -2,7 +2,7 @@ import * as PIXI from "pixi.js";
 import { default as Sound } from "pixi-sound";
 import * as ifvisible from "ifvisible";
 import { TiledMap } from "./tiled";
-import { Game } from "./controller/Game";
+import { Game } from "./objects/Game";
 
 const rootElement: HTMLElement =
   document.querySelector("#game") ?? document.body;
@@ -17,19 +17,22 @@ PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 const loadingElement = rootElement.querySelector("#loading")!;
 
 app.loader
+  // Maps
+  .add("texOverworld", "assets/maps/overworld.png")
+  .add("mapMain", "assets/maps/main.tiled.json")
+
+  // Preload textures
+  .add("texMe", "assets/images/me_sprite.png")
+  .add("texCursor", "assets/images/cursor.png")
+
+  // Shaders
   .add("shaderSepia", "assets/shaders/sepia.frag")
   .add("shaderBrightnessContrast", "assets/shaders/brightness_contrast.frag")
   .add("shaderVignette", "assets/shaders/vignette.frag")
   .add("shaderNoise", "assets/shaders/noise.frag")
-  .add("mapMain", "assets/map/main.tiled.json")
 
   // Sounds
   .add("bgm", "assets/sounds/bgm.mp3")
-
-  // Preload textures
-  .add("texOverworld", "assets/map/overworld.png")
-  .add("texMe", "assets/images/me_sprite.png")
-  .add("texCursor", "assets/images/cursor.png")
 
   // Add parser middleware of tiled map json file
   .use(TiledMap.middleware)
