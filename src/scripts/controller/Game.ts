@@ -19,6 +19,7 @@ export class Game {
   constructor(private app: PIXI.Application, private map: TiledMap) {
     app.ticker.add((delta) => this.update(delta));
 
+    // Create a root container
     this.root = new PIXI.Container();
     app.stage.addChild(this.root);
 
@@ -29,7 +30,7 @@ export class Game {
 
     const layer1 = map.getChildAt(1) as PIXI.Container;
 
-    // Add mouse related rectangles
+    // Add mouse related objects
     this.hover = new PIXI.Graphics();
     this.hover.beginFill(0xff000000);
     this.hover.drawRoundedRect(
@@ -86,6 +87,19 @@ export class Game {
         this.me.setMovementPath(path);
       }
     });
+    map.on("pointermove", (event: PIXI.interaction.InteractionEvent) => {
+      const pos = this.positionInRoot(this.getMousePosition(event.data));
+      const { tileX, tileY } = this.toTilePosition(pos);
+
+      // Update visibility and position of hover
+      if (this.pfGrid.isWalkableAt(tileX, tileY)) {
+        this.hover.visible = true;
+        this.hover.position.x = tileX * this.map.data.tilewidth;
+        this.hover.position.y = tileY * this.map.data.tileheight;
+      } else {
+        this.hover.visible = false;
+      }
+    });
   }
 
   public update(_: number) {
@@ -104,19 +118,13 @@ export class Game {
 
   private updateMouse() {
     const mousePos = this.getMousePosition();
-    const posInRoot = this.positionInRoot(mousePos);
-    const { tileX, tileY } = this.toTilePosition(posInRoot);
 
     // Update cursor position
     this.cursor.x = mousePos.x;
     this.cursor.y = mousePos.y;
 
-    // Update hover visibility and position
-    if (!this.me.playing && this.pfGrid.isWalkableAt(tileX, tileY)) {
-      this.hover.visible = true;
-      this.hover.position.x = tileX * this.map.data.tilewidth;
-      this.hover.position.y = tileY * this.map.data.tileheight;
-    } else {
+    // Hide hover if me is walking
+    if (this.me.playing) {
       this.hover.visible = false;
     }
 
