@@ -1,10 +1,13 @@
 import * as PIXI from "pixi.js";
 import * as PF from "pathfinding";
-import { Character } from "./Character";
+import { Character, Direction } from "./Character";
 import { TiledMap, TileLayer } from "../tiled";
+import { Dialog } from "./Dialog";
 
 export class Game {
-  private root: PIXI.Container;
+  private body: PIXI.Container;
+  private ui: PIXI.Container;
+
   private me: Character;
   private bubbleLayer: TileLayer;
 
@@ -20,56 +23,15 @@ export class Game {
   constructor(private app: PIXI.Application, private map: TiledMap) {
     app.ticker.add((delta) => this.update(delta));
 
-    // Create a root container
-    this.root = new PIXI.Container();
-    app.stage.addChild(this.root);
+    // Create containers
+    this.body = new PIXI.Container();
+    this.ui = new PIXI.Container();
+    app.stage.addChild(this.body);
+    app.stage.addChild(this.ui);
 
-    // Add map
+    // Map related
     this.pfGrid =
       map.collisionLayer?.getPFGrid() ?? new PF.Grid(map.width, map.height);
-    this.root.addChild(map);
-
-    const layer1 = map.getChildAt(1) as PIXI.Container;
-    this.bubbleLayer = map.layers["Bubbles"] as TileLayer;
-    // Hide all bubbles
-    this.bubbleLayer.getTiles().forEach((tile) => {
-      tile.visible = false;
-    });
-
-    // Add mouse related objects
-    this.hover = new PIXI.Graphics();
-    this.hover.beginFill(0xff000000);
-    this.hover.drawRoundedRect(
-      0,
-      0,
-      map.data.tilewidth,
-      map.data.tileheight,
-      4
-    );
-    this.hover.endFill();
-    this.hover.alpha = 0.2;
-    layer1.addChild(this.hover);
-
-    this.selection = this.hover.clone();
-    this.selection.alpha = 0.2;
-    this.selection.visible = false;
-    layer1.addChild(this.selection);
-
-    // Add character
-    this.me = Character.new({
-      baseTexture: PIXI.BaseTexture.from("texMe"),
-      characterWidth: 32,
-      characterHeight: 32,
-      map: map,
-      tilePosition: new PIXI.Point(13, 11),
-    });
-    layer1.addChild(this.me);
-
-    // Add cursor
-    this.cursor = PIXI.Sprite.from("texCursor");
-    app.stage.addChild(this.cursor);
-
-    // Interactions
     map.interactive = true;
     map.on("pointertap", (event: PIXI.interaction.InteractionEvent) => {
       const pos = this.positionInRoot(this.getMousePosition(event.data));
@@ -106,6 +68,73 @@ export class Game {
         this.hover.visible = false;
       }
     });
+    this.body.addChild(map);
+
+    // Bubble layer related
+    this.bubbleLayer = map.layers["Bubbles"] as TileLayer;
+    this.bubbleLayer.getTiles().forEach((tile) => {
+      // First, hide all bubbles
+      tile.visible = false;
+      // Setup interaction
+      const { x, y } = tile.tileSet.data.tileoffset ?? { x: 0, y: 0 };
+      tile.interactive = true;
+      tile.hitArea = new PIXI.Rectangle(-x, -y, tile.width, tile.height);
+      tile.on("pointertap", async () => {
+        // Change direction of me
+        if (this.me.x < tile.x) {
+          this.me.setDirection(Direction.right);
+        } else if (this.me.x > tile.x) {
+          this.me.setDirection(Direction.left);
+        } else if (this.me.y < tile.y) {
+          this.me.setDirection(Direction.down);
+        } else if (this.me.y > tile.y) {
+          this.me.setDirection(Direction.up);
+        }
+
+        // Show dialog
+        this.map.interactive = false;
+        await new Dialog(
+          this.screenWidth(),
+          this.screenHeight(),
+          "TEST",
+          "TEST"
+        ).show(this.ui);
+        this.map.interactive = true;
+      });
+    });
+
+    // Mouse related
+    const layer1 = map.getChildAt(1) as PIXI.Container;
+    this.hover = new PIXI.Graphics();
+    this.hover.beginFill(0xff000000);
+    this.hover.drawRoundedRect(
+      0,
+      0,
+      map.data.tilewidth,
+      map.data.tileheight,
+      4
+    );
+    this.hover.endFill();
+    this.hover.alpha = 0.2;
+    layer1.addChild(this.hover);
+
+    this.selection = this.hover.clone();
+    this.selection.alpha = 0.2;
+    this.selection.visible = false;
+    layer1.addChild(this.selection);
+
+    this.cursor = PIXI.Sprite.from("texCursor");
+    app.stage.addChild(this.cursor);
+
+    // Character related
+    this.me = Character.new({
+      baseTexture: PIXI.BaseTexture.from("texMe"),
+      characterWidth: 32,
+      characterHeight: 32,
+      map: map,
+      tilePosition: new PIXI.Point(13, 11),
+    });
+    layer1.addChild(this.me);
   }
 
   public update(_: number) {
@@ -116,10 +145,10 @@ export class Game {
 
   private updateCamera() {
     const pos = this.me.getActualPosition();
-    this.root.pivot.x = pos.x;
-    this.root.pivot.y = pos.y;
-    this.root.position.x = this.screenWidth() / 2 - this.map.data.tilewidth / 2;
-    this.root.position.y =
+    this.body.pivot.x = pos.x;
+    this.body.pivot.y = pos.y;
+    this.body.position.x = this.screenWidth() / 2 - this.map.data.tilewidth / 2;
+    this.body.position.y =
       this.screenHeight() / 2 - this.map.data.tileheight / 2;
   }
 
@@ -186,8 +215,8 @@ export class Game {
   }
 
   private positionInRoot(pos: PIXI.Point) {
-    const xInRoot = pos.x - this.root.position.x + this.root.pivot.x;
-    const yInRoot = pos.y - this.root.position.y + this.root.pivot.y;
+    const xInRoot = pos.x - this.body.position.x + this.body.pivot.x;
+    const yInRoot = pos.y - this.body.position.y + this.body.pivot.y;
     return new PIXI.Point(xInRoot, yInRoot);
   }
 

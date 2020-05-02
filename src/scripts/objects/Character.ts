@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js";
 import { TiledMap } from "../tiled";
 
-enum Direction {
+export enum Direction {
   down = 0,
   left = 1,
   right = 2,
@@ -133,15 +133,19 @@ export class Character extends PIXI.AnimatedSprite {
   }
 
   private prepareMove(nextTilePos: [number, number]) {
-    let nextDirection = this.getNextDirection(nextTilePos[0], nextTilePos[1]);
-    if (nextDirection !== this.direction) {
-      this.textures = this.animations[(this.direction = nextDirection)];
-      // Reset to frame 1
+    const nextDirection = this.getNextDirection(nextTilePos[0], nextTilePos[1]);
+    if (this.setDirection(nextDirection)) {
       this.gotoAndPlay(1);
     }
-
-    // Set next position
     this.nextTilePos = new PIXI.Point(nextTilePos[0], nextTilePos[1]);
+  }
+
+  public setDirection(direction: Direction) {
+    if (direction !== this.direction) {
+      this.textures = this.animations[(this.direction = direction)];
+      return true;
+    }
+    return false;
   }
 
   private getNextDirection(nextTileX: number, nextTileY: number) {
