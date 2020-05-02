@@ -9,7 +9,8 @@ export class TileLayer extends PIXI.Container {
   private horizontalFlips: boolean[] = [];
   private verticalFlips: boolean[] = [];
   private diagonalFlips: boolean[] = [];
-  private tiles: Tile[] = [];
+  private tiles: (Tile | undefined)[] = [];
+  private notEmptyTiles: Tile[] = [];
 
   // Collision related
   private pfGrid?: PF.Grid;
@@ -34,6 +35,14 @@ export class TileLayer extends PIXI.Container {
 
   public getPFGrid() {
     return this.pfGrid?.clone();
+  }
+
+  public getTile(x: number, y: number) {
+    return this.tiles[x + y * this.data.width];
+  }
+
+  public getTiles() {
+    return this.notEmptyTiles;
   }
 
   private create() {
@@ -87,9 +96,12 @@ export class TileLayer extends PIXI.Container {
             }
 
             this.tiles.push(tile);
+            this.notEmptyTiles.push(tile);
 
             this.addChild(tile);
           }
+        } else {
+          this.tiles.push(undefined);
         }
       }
     }

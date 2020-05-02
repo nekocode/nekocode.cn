@@ -1,11 +1,12 @@
 import * as PIXI from "pixi.js";
 import * as PF from "pathfinding";
 import { Character } from "./Character";
-import { TiledMap } from "../tiled";
+import { TiledMap, TileLayer } from "../tiled";
 
 export class Game {
   private root: PIXI.Container;
   private me: Character;
+  private bubbleLayer: TileLayer;
 
   // Mouse related
   private cursor: PIXI.Sprite;
@@ -29,6 +30,11 @@ export class Game {
     this.root.addChild(map);
 
     const layer1 = map.getChildAt(1) as PIXI.Container;
+    this.bubbleLayer = map.layers["Bubbles"] as TileLayer;
+    // Hide all bubbles
+    this.bubbleLayer.getTiles().forEach((tile) => {
+      tile.visible = false;
+    });
 
     // Add mouse related objects
     this.hover = new PIXI.Graphics();
@@ -105,6 +111,7 @@ export class Game {
   public update(_: number) {
     this.updateCamera();
     this.updateMouse();
+    this.updateBubbles();
   }
 
   private updateCamera() {
@@ -130,6 +137,34 @@ export class Game {
 
     // Update selection visibility
     this.selection.visible = this.me.playing;
+  }
+
+  private updateBubbles() {
+    if (this.me.playing) {
+      // Hide all bubbles
+      this.bubbleLayer.getTiles().forEach((tile) => {
+        tile.visible = false;
+      });
+      return;
+    }
+
+    const { x, y } = this.me.nextTilePos;
+    const leftTile = this.bubbleLayer.getTile(x - 1, y);
+    if (leftTile) {
+      leftTile.visible = true;
+    }
+    const rightTile = this.bubbleLayer.getTile(x + 1, y);
+    if (rightTile) {
+      rightTile.visible = true;
+    }
+    const upTile = this.bubbleLayer.getTile(x, y - 1);
+    if (upTile) {
+      upTile.visible = true;
+    }
+    const downTile = this.bubbleLayer.getTile(x, y + 1);
+    if (downTile) {
+      downTile.visible = true;
+    }
   }
 
   private screenWidth() {
