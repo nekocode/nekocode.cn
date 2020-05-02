@@ -94,10 +94,9 @@ export class Game {
         // Show dialog
         this.map.interactive = false;
         await new Dialog(
-          this.screenWidth(),
-          this.screenHeight(),
-          "TEST",
-          "TEST"
+          this.app,
+          "石碑",
+          "「欢迎来到neko岛，这个岛的主人是nekocode。快到处看看他藏了什么有趣的东西吧！」"
         ).show(this.ui);
         this.map.interactive = true;
       });
