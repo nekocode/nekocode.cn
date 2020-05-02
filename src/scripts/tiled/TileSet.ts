@@ -39,7 +39,7 @@ export class TileSet {
         });
       }
 
-      this.tiles.push(new Tile(id, data.firstgid + id, frames));
+      this.tiles.push(new Tile(id, data.firstgid + id, this, frames));
     }
   }
 

@@ -1,9 +1,11 @@
 import * as PIXI from "pixi.js";
+import { TileSet } from "./TileSet";
 
 export class Tile extends PIXI.AnimatedSprite {
   constructor(
     public id: number,
     public gid: number,
+    public tileSet: TileSet,
     private frames: PIXI.AnimatedSprite.FrameObject[],
     public horizontalFlip: boolean = false,
     public verticalFlip: boolean = false,
@@ -14,15 +16,14 @@ export class Tile extends PIXI.AnimatedSprite {
   }
 
   public clone(args: {
-    id?: number;
-    gid?: number;
     horizontalFlip?: boolean;
     verticalFlip?: boolean;
     diagonalFlip?: boolean;
   }): Tile {
     return new Tile(
-      args.id ?? this.id,
-      args.gid ?? this.gid,
+      this.id,
+      this.gid,
+      this.tileSet,
       this.frames,
       args.horizontalFlip ?? this.horizontalFlip,
       args.verticalFlip ?? this.verticalFlip,
