@@ -28,7 +28,7 @@ export interface ITileSetData {
 
 export interface ITileData {
   id: number;
-  animations: IAnimationData[];
+  animation: IAnimationData[];
 }
 
 export interface IAnimationData {
