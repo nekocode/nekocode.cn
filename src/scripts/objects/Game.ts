@@ -75,10 +75,16 @@ export class Game {
     this.bubbleLayer.getTiles().forEach((tile) => {
       // First, hide all bubbles
       tile.visible = false;
+
       // Setup interaction
-      const { x, y } = tile.tileSet.data.tileoffset ?? { x: 0, y: 0 };
+      const offset = tile.tileSet.data.tileoffset ?? { x: 0, y: 0 };
       tile.interactive = true;
-      tile.hitArea = new PIXI.Rectangle(-x, -y, tile.width, tile.height);
+      tile.hitArea = new PIXI.Rectangle(
+        -offset.x,
+        -offset.y,
+        tile.width,
+        tile.height
+      );
       tile.on("pointertap", async () => {
         // Change direction of me
         if (this.me.x < tile.x) {
@@ -93,11 +99,22 @@ export class Game {
 
         // Show dialog
         this.map.interactive = false;
-        await new Dialog(
-          this.app,
-          "石碑",
-          "「欢迎来到neko岛，这个岛的主人是nekocode。快到处看看他藏了什么有趣的东西吧！」"
-        ).show(this.ui);
+        const tilePos = this.toTilePosition(
+          new PIXI.Point(tile.x - offset.x + 1, tile.y - offset.y + 1)
+        );
+        let data: [string, string] = ["", ""];
+        if (tilePos.tileX == 15 && tilePos.tileY == 12) {
+          data = [
+            "石碑",
+            "欢迎来到「neko岛」，这个小岛由nekocode使用PixiJS创造！",
+          ];
+        } else if (tilePos.tileX == 29 && tilePos.tileY == 16) {
+          data = ["木牌", "小岛装修中！"];
+        } else if (tilePos.tileX == 28 && tilePos.tileY == 9) {
+          data = ["我", "电脑上面好像有份文件「resume.html」，要打开看看么？"];
+        }
+
+        await new Dialog(this.app, data[0], data[1]).show(this.ui);
         this.map.interactive = true;
       });
     });
