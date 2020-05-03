@@ -141,6 +141,7 @@ class ItemMenu extends PIXI.Container {
 
       textMetrics = PIXI.TextMetrics.measureText(text.text, textStyle);
       height += textMetrics.height + pad;
+      text.hitArea = new PIXI.Rectangle(-width / 2, -pad, width, screenHeight);
     }
 
     this.bg.width = width;
