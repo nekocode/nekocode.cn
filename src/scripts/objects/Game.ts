@@ -102,19 +102,29 @@ export class Game {
         const tilePos = this.toTilePosition(
           new PIXI.Point(tile.x - offset.x + 1, tile.y - offset.y + 1)
         );
-        let data: [string, string] = ["", ""];
         if (tilePos.tileX == 15 && tilePos.tileY == 12) {
-          data = [
+          await new Dialog(
+            this.app,
             "石碑",
-            "欢迎来到「neko岛」，这个小岛由nekocode使用PixiJS创造！",
-          ];
-        } else if (tilePos.tileX == 29 && tilePos.tileY == 16) {
-          data = ["木牌", "小岛装修中！"];
+            "欢迎来到「neko岛」，这个小岛由nekocode使用PixiJS创造！"
+          ).show(this.ui);
         } else if (tilePos.tileX == 28 && tilePos.tileY == 9) {
-          data = ["我", "电脑上面好像有份文件「resume.html」，要打开看看么？"];
+          const index = await new Dialog(
+            this.app,
+            "我",
+            "电脑上面好像有份文件「resume.html」，要打开看看么？",
+            [">打开看看", ">算了"]
+          ).show(this.ui);
+          if (index == 0) {
+            //
+          }
+        } else if (tilePos.tileX == 29 && tilePos.tileY == 16) {
+          await new Dialog(
+            this.app,
+            "木牌",
+            "小岛还在装修中，欢迎常来看看！"
+          ).show(this.ui);
         }
-
-        await new Dialog(this.app, data[0], data[1]).show(this.ui);
         this.map.interactive = true;
       });
     });
