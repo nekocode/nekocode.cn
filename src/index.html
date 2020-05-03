@@ -4,8 +4,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>neko 岛</title>
+  <title>neko岛</title>
   <link href="assets/images/favicon.ico" rel="icon" />
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/modalite@2.0.1/dist/modalite.min.css" />
+  <script type="text/javascript" src="https://unpkg.com/modalite@2.0.1/dist/modalite.min.js"></script>
 
   <style type="text/css">
     html {
@@ -31,6 +33,11 @@
       color: white;
       font-size: 20px;
     }
+
+    .modalite-container {
+      max-width: 800px !important;
+      max-height: 600px !important;
+    }
   </style>
 </head>
 
@@ -38,6 +45,18 @@
   <div id="game">
     <div id="loading">Loading...</div>
   </div>
+
+  <div id="resmue-modal" class="modalite-modal modalite-remote modalite-iframe" data-modalite-modal
+    data-modalite-has-remote>
+    <div class="modalite-container">
+      <div class="modalite-close" data-modalite-close></div>
+
+      <div class="modalite-content">
+        <iframe src="" data-modalite-remote="https://baidu.com/"></iframe>
+      </div>
+    </div>
+  </div>
+
   <script src="bundle.js"></script>
 </body>
 

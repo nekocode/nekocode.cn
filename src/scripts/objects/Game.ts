@@ -116,7 +116,8 @@ export class Game {
             [">打开看看", ">算了"]
           ).show(this.ui);
           if (index == 0) {
-            //
+            // Open an iframe modal
+            (<any>window).Modalite.open(document.querySelector("#resmue-modal"));
           }
         } else if (tilePos.tileX == 29 && tilePos.tileY == 16) {
           await new Dialog(
