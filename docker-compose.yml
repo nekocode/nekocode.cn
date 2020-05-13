@@ -1,0 +1,37 @@
+version: "3.4"
+services:
+  nginx_proxy:
+    image: jwilder/nginx-proxy:latest
+    container_name: nginx_proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./nginx_proxy/vhost:/etc/nginx/vhost.d
+      - ./nginx_proxy/html:/usr/share/nginx/html
+      - ./nginx_proxy/certs:/etc/nginx/certs
+    labels:
+      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: 'true'
+
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion:latest
+    container_name: letsencrypt
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./nginx_proxy/vhost:/etc/nginx/vhost.d
+      - ./nginx_proxy/html:/usr/share/nginx/html
+      - ./nginx_proxy/certs:/etc/nginx/certs
+
+  web:
+    image: nekocode/nekocode.cn:latest
+    container_name: web
+    restart: unless-stopped
+    environment:
+      VIRTUAL_HOST: nekocode.cn
+      VIRTUAL_PORT: 80
+      LETSENCRYPT_HOST: nekocode.cn
+      LETSENCRYPT_EMAIL: nekocode.cn@gmail.com
+
