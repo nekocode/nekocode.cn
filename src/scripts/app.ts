@@ -31,9 +31,6 @@ app.loader
   .add("shaderVignette", "assets/shaders/vignette.frag")
   .add("shaderNoise", "assets/shaders/noise.frag")
 
-  // Sounds
-  .add("bgm", "assets/sounds/bgm.mp3")
-
   // Add parser middleware of tiled map json file
   .use(TiledMap.middleware)
 
@@ -64,6 +61,30 @@ app.loader
       }),
     ];
 
+    // Set stage scale
+    const updateScale = () => {
+      const maxWh = Math.max(app.screen.width, app.screen.height);
+      app.stage.scale.set(maxWh / (11 * 32));
+    };
+    updateScale();
+    window.onresize = updateScale;
+
+    // Init map
+    const map = res.mapMain.data() as TiledMap;
+
+    // Start game controlling
+    new Game(app, map);
+
+    // Resume application update
+    app.start();
+  });
+
+// Load some big resource files on a separate loader
+new PIXI.Loader()
+  // Sounds
+  .add("bgm", "assets/sounds/bgm.mp3")
+
+  .load((_: PIXI.Loader, __: any) => {
     // Play background music
     let volumeAll = 1.0;
     ifvisible.on("blur", function () {
@@ -82,22 +103,7 @@ app.loader
       }
     }, 100);
     Sound.volumeAll = 1.0;
-    Sound.play("bgm", { loop: true });
-
-    // Set stage scale
-    const updateScale = () => {
-      const maxWh = Math.max(app.screen.width, app.screen.height);
-      app.stage.scale.set(maxWh / (11 * 32));
-    };
-    updateScale();
-    window.onresize = updateScale;
-
-    // Init map
-    const map = res.mapMain.data() as TiledMap;
-
-    // Start game controlling
-    new Game(app, map);
-
-    // Resume application update
-    app.start();
+    try {
+      Sound.play("bgm", { loop: true });
+    } catch {}
   });
