@@ -82,7 +82,7 @@ app.loader
 // Load some big resource files on a separate loader
 new PIXI.Loader()
   // Sounds
-  .add("bgm", "assets/sounds/bgm.mp3")
+  .add("bgm", "https://s1.nekocode.cn/nekocodecn_bgm.mp3")
 
   .load((_: PIXI.Loader, __: any) => {
     // Play background music
