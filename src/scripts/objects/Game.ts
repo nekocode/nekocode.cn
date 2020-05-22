@@ -80,10 +80,10 @@ export class Game {
       const offset = tile.tileSet.data.tileoffset ?? { x: 0, y: 0 };
       tile.interactive = true;
       tile.hitArea = new PIXI.Rectangle(
-        -offset.x,
-        -offset.y,
+        0,
+        0,
         tile.width,
-        tile.height
+        tile.height - offset.y
       );
       tile.on("pointertap", async () => {
         // Change direction of me
@@ -117,7 +117,9 @@ export class Game {
           ).show(this.ui);
           if (index == 0) {
             // Open an iframe modal
-            (<any>window).Modalite.open(document.querySelector("#resmue-modal"));
+            (<any>window).Modalite.open(
+              document.querySelector("#resmue-modal")
+            );
           }
         } else if (tilePos.tileX == 29 && tilePos.tileY == 16) {
           await new Dialog(
