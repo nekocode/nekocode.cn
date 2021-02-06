@@ -51,7 +51,7 @@ export class Dialog extends PIXI.Container {
       this.update(this.getWidth(), this.getHeight());
 
       this.interactive = true;
-      this.on("pointertap", (_: PIXI.interaction.InteractionEvent) => {
+      this.on("pointertap", (_: PIXI.InteractionEvent) => {
         exit(-1);
       });
     });

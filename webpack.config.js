@@ -1,5 +1,5 @@
 const path = require("path");
-const CopyPlugin = require("copy-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const isDev = process.env.NODE_ENV !== "production";
 
@@ -24,11 +24,12 @@ const config = {
   },
   plugins: [
     new CleanWebpackPlugin(),
-    new CopyPlugin([
-      { from: "src/index.html" },
-      { from: "src/css/", to: "css/" },
-      { from: "src/assets/", to: "assets/" },
-    ]),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: "src/index.html" },
+        { from: "src/assets/", to: "assets/" },
+      ],
+    }),
   ],
   devServer: {
     contentBase: path.join(__dirname, "dist"),
@@ -38,9 +39,6 @@ const config = {
   },
   optimization: {
     minimize: !isDev,
-  },
-  node: {
-    fs: "empty",
   },
 };
 

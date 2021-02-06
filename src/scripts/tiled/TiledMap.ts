@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 
-import * as path from "path";
+import * as path from 'path-browserify';
 import { ImageLayer } from "./ImageLayer";
 import { TileLayer } from "./TileLayer";
 import { TileSet } from "./TileSet";

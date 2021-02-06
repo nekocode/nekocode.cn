@@ -34,10 +34,6 @@ app.loader
   // Add parser middleware of tiled map json file
   .use(TiledMap.middleware)
 
-  .on("progress", (loader: PIXI.Loader, _: PIXI.LoaderResource) => {
-    loader.resources;
-    loadingElement.innerHTML = "Loading " + loader.progress.toFixed(0) + "%...";
-  })
   .load((_: PIXI.Loader, res: any) => {
     // Remove loading text
     loadingElement.remove();
@@ -77,6 +73,9 @@ app.loader
 
     // Resume application update
     app.start();
+  })
+  .onProgress.add((loader: PIXI.Loader, _: PIXI.LoaderResource) => {
+    loadingElement.innerHTML = "Loading " + loader.progress.toFixed(0) + "%...";
   });
 
 // Load some big resource files on a separate loader

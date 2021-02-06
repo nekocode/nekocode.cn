@@ -33,7 +33,7 @@ export class Game {
     this.pfGrid =
       map.collisionLayer?.getPFGrid() ?? new PF.Grid(map.width, map.height);
     map.interactive = true;
-    map.on("pointertap", (event: PIXI.interaction.InteractionEvent) => {
+    map.on("pointertap", (event: PIXI.InteractionEvent) => {
       const pos = this.positionInRoot(this.getMousePosition(event.data));
       const { tileX, tileY } = this.toTilePosition(pos);
 
@@ -55,7 +55,7 @@ export class Game {
         this.me.setMovementPath(path);
       }
     });
-    map.on("pointermove", (event: PIXI.interaction.InteractionEvent) => {
+    map.on("pointermove", (event: PIXI.InteractionEvent) => {
       const pos = this.positionInRoot(this.getMousePosition(event.data));
       const { tileX, tileY } = this.toTilePosition(pos);
 
@@ -233,7 +233,7 @@ export class Game {
     return this.app.renderer.height / this.app.stage.scale.y;
   }
 
-  private getMousePosition(data?: PIXI.interaction.InteractionData) {
+  private getMousePosition(data?: PIXI.InteractionData) {
     const { x, y } = (
       data ?? this.app.renderer.plugins.interaction.mouse
     ).global;
