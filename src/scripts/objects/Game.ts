@@ -112,8 +112,18 @@ export class Game {
           const index = await new Dialog(
             this.app,
             "我",
-            "电脑上面好像有份文件「resume.html」，要打开看看么？",
+            "电脑上好像有个奇怪的网站，要打开看看么？",
             [">打开看看", ">算了"]
+          ).show(this.ui);
+          if (index == 0) {
+            window.open("https://nekocode.github.io/neko-gallery/");
+          }
+        } else if (tilePos.tileX == 29 && tilePos.tileY == 16) {
+          const index = await new Dialog(
+            this.app,
+            "我",
+            "这是个记录了小岛作者简历的木牌，要看看么？",
+            [">看看", ">算了"]
           ).show(this.ui);
           if (index == 0) {
             // Open an iframe modal
@@ -121,12 +131,6 @@ export class Game {
               document.querySelector("#resmue-modal")
             );
           }
-        } else if (tilePos.tileX == 29 && tilePos.tileY == 16) {
-          await new Dialog(
-            this.app,
-            "木牌",
-            "小岛还在装修中，欢迎常来看看！"
-          ).show(this.ui);
         }
         this.map.interactive = true;
       });
