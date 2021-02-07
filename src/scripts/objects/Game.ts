@@ -112,7 +112,7 @@ export class Game {
           const index = await new Dialog(
             this.app,
             "我",
-            "电脑上好像有个奇怪的网站，要打开看看么？",
+            "电脑上好像有个奇怪的网站，要打开看看么（需要翻墙）？",
             [">打开看看", ">算了"]
           ).show(this.ui);
           if (index == 0) {
