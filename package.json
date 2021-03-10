@@ -14,11 +14,11 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "clean-webpack-plugin": "^3.0.0",
-    "copy-webpack-plugin": "^7.0.0",
+    "copy-webpack-plugin": "^8.0.0",
     "cross-env": "^7.0.3",
-    "ts-loader": "^8.0.15",
-    "typescript": "^4.1.3",
-    "webpack": "^5.21.1",
+    "ts-loader": "^8.0.17",
+    "typescript": "^4.2.3",
+    "webpack": "^5.24.4",
     "webpack-cli": "^4.5.0",
     "webpack-dev-server": "^3.11.2"
   },
@@ -29,6 +29,6 @@
     "path-browserify": "^1.0.1",
     "pathfinding": "^0.4.18",
     "pixi-sound": "^3.0.5",
-    "pixi.js": "^5.3.7"
+    "pixi.js": "^5.3.8"
   }
 }
