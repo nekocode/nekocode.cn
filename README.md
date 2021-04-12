@@ -3,7 +3,7 @@
 
 ## neko 岛🏝
 
-使用 [PixiJS](https://www.pixijs.com/) + TiledMap 实现的个人小岛
+使用 PixiJS + TiledMap 实现的个人小岛
 
 在线演示: [nekocode.cn](https://nekocode.cn/)
 
