@@ -1,3 +1,5 @@
+![screenshot](screenshot.jpg)
+
 ## neko 岛🏝
 
 使用 [PixiJS](https://www.pixijs.com/) + TiledMap 实现的个人小岛
