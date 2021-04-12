@@ -1,4 +1,5 @@
-![screenshot](screenshot.jpg)
+| ![screenshot](screenshot.jpg) |
+| --- |
 
 ## neko 岛🏝
 
