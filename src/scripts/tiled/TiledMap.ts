@@ -41,7 +41,7 @@ export class TiledMap extends PIXI.Container {
       // Draw background color
       const background = new PIXI.Graphics();
       background.beginFill(
-        PIXI.utils.string2hex(this.data?.backgroundcolor ?? "#0")
+        new PIXI.Color(this.data?.backgroundcolor ?? "#0").toHex(),
       );
       background.drawRect(0, 0, this.width, this.height);
       background.endFill();
