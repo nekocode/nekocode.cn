@@ -23,7 +23,7 @@ export class TileSet {
 
     // Transform to tile objects/sprites
     for (let id = 0; id < textures.length; id++) {
-      const frames: PIXI.AnimatedSprite.FrameObject[] = [];
+      const frames: PIXI.FrameObject[] = [];
       const animation = data.tiles?.find((tile) => tile.id === id)?.animation;
       if (animation != null && animation.length > 0) {
         for (const frame of animation) {

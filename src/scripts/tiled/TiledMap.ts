@@ -1,20 +1,27 @@
 import * as PIXI from "pixi.js";
-
-import * as path from 'path-browserify';
+import path from "path-browserify";
 import { ImageLayer } from "./ImageLayer";
 import { TileLayer } from "./TileLayer";
 import { TileSet } from "./TileSet";
 import { ITMXData } from "./types/interfaces";
 
 export class TiledMap extends PIXI.Container {
-  static middleware(resource: any, next: () => void) {
-    if (!resource.url.endsWith(".tiled.json")) return next();
-
-    const mapData = JSON.parse(resource.xhr.responseText);
-    const route = path.dirname(resource.url);
-    resource.data = () => new TiledMap(mapData, route);
-    next();
-  }
+  static loaderParser: PIXI.LoaderParser<TiledMap> = {
+    extension: {
+      name: "Tiled Map Loader Parser",
+      priority: PIXI.LoaderParserPriority.Normal,
+      type: PIXI.ExtensionType.LoadParser,
+    },
+    test(url: string) {
+      return url.endsWith(".tiled.json");
+    },
+    async load(url: string) {
+      const response = await PIXI.settings.ADAPTER.fetch(url);
+      const mapData = await response.json();
+      const route = path.dirname(url);
+      return new TiledMap(mapData, route) as any;
+    },
+  };
 
   public tileSets: TileSet[] = [];
   public layers: { [name: string]: PIXI.Container } = {};

@@ -32,9 +32,9 @@ export class Game {
     // Map related
     this.pfGrid =
       map.collisionLayer?.getPFGrid() ?? new PF.Grid(map.width, map.height);
-    map.interactive = true;
-    map.on("pointertap", (event: PIXI.InteractionEvent) => {
-      const pos = this.positionInRoot(this.getMousePosition(event.data));
+    map.eventMode = 'static';
+    map.on("pointertap", (event: PIXI.FederatedPointerEvent) => {
+      const pos = this.positionInRoot(this.getMousePosition(event));
       const { tileX, tileY } = this.toTilePosition(pos);
 
       if (this.pfGrid.isWalkableAt(tileX, tileY)) {
@@ -55,8 +55,8 @@ export class Game {
         this.me.setMovementPath(path);
       }
     });
-    map.on("pointermove", (event: PIXI.InteractionEvent) => {
-      const pos = this.positionInRoot(this.getMousePosition(event.data));
+    map.on("pointermove", (event: PIXI.FederatedPointerEvent) => {
+      const pos = this.positionInRoot(this.getMousePosition(event));
       const { tileX, tileY } = this.toTilePosition(pos);
 
       // Update visibility and position of hover
@@ -78,7 +78,7 @@ export class Game {
 
       // Setup interaction
       const offset = tile.tileSet.data.tileoffset ?? { x: 0, y: 0 };
-      tile.interactive = true;
+      tile.eventMode = 'static';
       tile.hitArea = new PIXI.Rectangle(
         0,
         0,
@@ -98,7 +98,7 @@ export class Game {
         }
 
         // Show dialog
-        this.map.interactive = false;
+        this.map.eventMode = 'none';
         const tilePos = this.toTilePosition(
           new PIXI.Point(tile.x - offset.x + 1, tile.y - offset.y + 1)
         );
@@ -128,14 +128,14 @@ export class Game {
             "小岛还在装修中，欢迎常来看看！"
           ).show(this.ui);
         }
-        this.map.interactive = true;
+        this.map.eventMode = 'static';
       });
     });
 
     // Mouse related
     const layer1 = map.getChildAt(1) as PIXI.Container;
     this.hover = new PIXI.Graphics();
-    this.hover.beginFill(0xff000000);
+    this.hover.beginFill(0x000000);
     this.hover.drawRoundedRect(
       0,
       0,
@@ -233,10 +233,8 @@ export class Game {
     return this.app.renderer.height / this.app.stage.scale.y;
   }
 
-  private getMousePosition(data?: PIXI.InteractionData) {
-    const { x, y } = (
-      data ?? this.app.renderer.plugins.interaction.mouse
-    ).global;
+  private getMousePosition(event?: PIXI.FederatedPointerEvent) {
+    const { x, y } = event ?? this.app.renderer.events.pointer ?? { x: 0, y: 0};
     return new PIXI.Point(
       x / this.app.stage.scale.x,
       y / this.app.stage.scale.y

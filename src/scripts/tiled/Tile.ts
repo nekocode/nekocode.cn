@@ -6,7 +6,7 @@ export class Tile extends PIXI.AnimatedSprite {
     public id: number,
     public gid: number,
     public tileSet: TileSet,
-    private frames: PIXI.AnimatedSprite.FrameObject[],
+    private frames: PIXI.FrameObject[],
     public horizontalFlip: boolean = false,
     public verticalFlip: boolean = false,
     public diagonalFlip: boolean = false

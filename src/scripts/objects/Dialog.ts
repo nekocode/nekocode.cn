@@ -50,8 +50,8 @@ export class Dialog extends PIXI.Container {
       }
       this.update(this.getWidth(), this.getHeight());
 
-      this.interactive = true;
-      this.on("pointertap", (_: PIXI.InteractionEvent) => {
+      this.eventMode = 'static';
+      this.on("pointertap", (_: PIXI.FederatedEvent) => {
         exit(-1);
       });
     });
@@ -109,7 +109,7 @@ class ItemMenu extends PIXI.Container {
       text.anchor.set(0.5, 0);
 
       // Interaction
-      text.interactive = true;
+      text.eventMode = 'static';
       text.on("pointertap", () => {
         onItemTap(i);
       });
@@ -156,7 +156,7 @@ class ItemMenu extends PIXI.Container {
 
 function createBg() {
   const bg = new PIXI.Graphics();
-  bg.beginFill(0xff000000);
+  bg.beginFill(0x000000);
   bg.drawRect(0, 0, 1, 1);
   bg.endFill();
   bg.alpha = 0.5;
