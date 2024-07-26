@@ -26,7 +26,7 @@ Docker 应该是目前 DevOps 界最火的工具了。
 
 来看看我的 Docker Compose YAML 吧：
 
-```
+```yaml
 Nginx-Proxy:
   image: daocloud.io/daocloud/nginx-proxy:latest
   privileged: false

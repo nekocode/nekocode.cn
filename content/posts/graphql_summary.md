@@ -12,7 +12,7 @@ GraphQL 是一门查询语言，使用它可以描述你需要哪些数据。而
 
 举个例子，下面的是 Schema：
 
-```
+```graphql
 type Query {
   hello: String
 }
@@ -20,7 +20,7 @@ type Query {
 
 通过以上 Schema 的声明，你可以写下这么一条 GraphQL 查询语句：
 
-```
+```graphql
 query {
   hello
 }
@@ -30,7 +30,7 @@ query {
 ## Schema
 Schema 里主要有两个核心的概念，类型（Type）和字段（Field）。举个例子：
 
-```
+```graphql
 type User {
   name: String
 }
@@ -39,7 +39,7 @@ type User {
 上面定义了一个名为 User 的类型，并且这个类型里包含了一个叫做 name 的字段。
 注意，字段必须声明类型，可以声明为 Int、String 这类基础类型，也可以声明为自定义的类型。另外，字段是可以包含参数的，这让它看起来有点像函数：
 
-```
+```graphql
 type User {
   name: String
   posts(count: Int): [Post]
@@ -56,7 +56,7 @@ type Post {
 ## Schema 里的 Query 和 Mutation 类型
 在 Schema 里面有两个约定的类型：
 
-```
+```graphql
 type Query {
 }
 
@@ -66,7 +66,7 @@ type Mutation {
 
 我们假设，任何 GraphQL 语句都其实是在查询 Document 对象的子字段，而 Document 里面有且只有以下两个直接子字段：
 
-```
+```graphql
 type Document {
   query: Query
   mutation: Mutation
@@ -75,7 +75,7 @@ type Document {
 
 想要在 GraphQL 语句中查询其它字段，只能把要查询的字段放到 Query 和 Mutation 类型里面。例如我们想添加一个用来查询用户信息的字段，那我们可以在 Query 类型里添加一个 me 字段：
 
-```
+```graphql
 type Query {
   me: User
 }
@@ -87,7 +87,7 @@ type User {
 
 那么用户就可以用下面的 GraphQL 语句来查询自己的名称了：
 
-```
+```graphql
 query {
   me {
     name
@@ -105,7 +105,7 @@ query {
 
 以下是一个简单的例子：
 
-```
+```graphql
 type Query {
   me: User
 }
@@ -121,7 +121,7 @@ Resolver 实际上是一个函数。当我们执行某条 GraphQL 语句时（�
 
 拿第一节的例子，Schema 为：
 
-```
+```graphql
 type Query {
   hello: String
 }
@@ -129,7 +129,7 @@ type Query {
 
 我们接下来实现一个用来「查询 Query 类型里字段 hello」的 Resolver。例如我们让这个字段返回 "Hello world!" 字符串：
 
-```
+```typescript
 export const resolverMap: IResolvers = {
   Query: {
     hello: {
@@ -145,7 +145,7 @@ export const resolverMap: IResolvers = {
 
 我们再来看下如果查询的字段是复杂类型的情况。假设 Schema 为：
 
-```
+```graphql
 type Query {
   me: User
 }
@@ -158,7 +158,7 @@ type User {
 
 User 类型里的 friend 字段返回的是一个 User 类型，那么就可能出现下面这样循环嵌套的 GraphQL 语句：
 
-```
+```graphql
 query {
   me {
     name
@@ -176,7 +176,7 @@ query {
 
 注意前面说到 Resolver 表。我们可以在表里添加 User 类型，然后为 friend 字段单独添加一个 Resolver：
 
-```
+```typescript
 export const resolverMap: IResolvers = {
   Query: {
     me: {
@@ -194,7 +194,7 @@ export const resolverMap: IResolvers = {
 
 那么，前面的 GraphQL 语句里的三个 name 会分别返回：
 
-```
+```text
 Mark
 Mark's friend
 Mark's friend's friend

@@ -1,0 +1,26 @@
+[[entries]]
+title = "INFO"
+
+  [[entries.entries]]
+  title = "👋 I'm Mark Yang, a full-stack engineer and specialize in frontend (web/flutter/android) development."
+
+  [[entries.entries]]
+  title = "🐙 Github"
+  url = "https://github.com/"
+
+[[entries]]
+title = "ALL POSTS"
+
+  [entries.post_list]
+  limit = 20
+  show_more = false
+  show_more_text = "See archive..."
+  show_more_url = "posts"
+
+[[entries]]
+title = "RSS"
+url = "index.xml"
+
+[[entries]]
+title = "粤ICP备20038185号"
+url = "http://www.beian.miit.gov.cn/"

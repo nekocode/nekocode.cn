@@ -12,7 +12,7 @@ tags:
 
 首先举个反例，我们定义了以下的 Schema：
 
-```
+```graphql
 type Query {
   getPost: Post
 }
@@ -25,7 +25,7 @@ type Post {
 
 对应的 Resolver Map：
 
-```
+```typescript
 export const resolverMap: IResolvers = {
   Query: {
     getPost: {
@@ -46,7 +46,7 @@ export const resolverMap: IResolvers = {
 
 为了解决这个问题，我们应当把 authorName 字段的获取放到另一个 Resolver 里。例如：
 
-```
+```typescript
 export const resolverMap: IResolvers = {
   Query: {
     getPost: {
@@ -69,7 +69,7 @@ export const resolverMap: IResolvers = {
 
 现在再假设一下，如果 Post 里还要返回用户头像路径的话，例如 Schema 为：
 
-```
+```graphql
 type Post {
   title: String
   authorName: String
@@ -83,7 +83,7 @@ type Post {
 
 所以说这种扁平的 Schema 设计其实是不好，更好的设计应该是：
 
-```
+```graphql
 type Post {
   title: String
   author: User
@@ -97,7 +97,7 @@ type User {
 
 对应 Resolver Map：
 
-```
+```typescript
 export const resolverMap: IResolvers = {
   Query: {
     getPost: {
@@ -116,7 +116,7 @@ export const resolverMap: IResolvers = {
 };
 ```
 
-## GraphQL Orver Prisma
+## GraphQL Over Prisma
 Prisma 是基于 GraphQL 的最流行的 ORM 框架之一。我们可以使用 Prisma 提供的类似 GraphQL Schema 的语法来定义我们的所有 Model，然后 Prisma 会帮我们在数据库中建立对应的表和列，并生成一个包含增删查改这些 Model 功能的 GraphQL 服务。
 
 简单来说，通过 Prisma，我们可以使用 GraphQL 语句来操作数据库。

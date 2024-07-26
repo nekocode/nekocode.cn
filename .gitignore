@@ -2,3 +2,7 @@
 public
 static/resume.pdf
 static/project-gallery
+.hugo_build.lock
+dist
+node_modules
+resources

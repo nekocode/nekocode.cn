@@ -1,16 +1,8 @@
 baseurl: "https://nekocode.cn/"
 languageCode: "zh-CN"
 title: "杨凡"
-theme: "hugo-theme-one"
-googleAnalytics: "UA-129020994-1"
+theme: "hugo-theme-nostyleplease"
 disqusShortname: "nekocode"
 
-menu:
-  main:
-    - name: "About"
-      url: "about"
-      weight: 1
-
 params:
-  footer: " | <a href=\"https://github.com/nekocode/nekocode.cn/\">Source code</a>"
-  disqusURL: "https://nekocode.cn"
+  favicon: /favicon.ico

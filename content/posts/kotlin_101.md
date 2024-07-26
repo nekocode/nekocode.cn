@@ -125,7 +125,7 @@ view.doOnPreDraw {
 
 另外一个好消息是，今年 11 月刚发布的 Gradle 5.0 也宣布支持了 Kotlin DSL，这意味着我们甚至可以用 Kotlin 来写我们的构建脚本了：
 
-```
+```gradle
 android {
     compileSdkVersion(27)
     defaultConfig {
