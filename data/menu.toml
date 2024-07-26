@@ -9,8 +9,12 @@ title = "INFO"
   url = "https://github.com/"
 
   [[entries.entries]]
-  title = "🎮 NEKOCODE.cn"
+  title = "🏝️ NEKO 岛"
   url = "https://nekocode.cn/"
+
+  [[entries.entries]]
+  title = "📜 简历"
+  url = "https://nekocode.cn/resume/"
 
 [[entries]]
 title = "ALL POSTS"
