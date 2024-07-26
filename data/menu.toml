@@ -8,6 +8,10 @@ title = "INFO"
   title = "🐙 Github"
   url = "https://github.com/"
 
+  [[entries.entries]]
+  title = "🎮 NEKOCODE.cn"
+  url = "https://nekocode.cn/"
+
 [[entries]]
 title = "ALL POSTS"
 
