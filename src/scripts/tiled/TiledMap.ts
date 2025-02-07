@@ -1,88 +1,105 @@
-import * as PIXI from "pixi.js";
+import {
+  BrowserAdapter,
+  Color,
+  Container,
+  ExtensionType,
+  Graphics,
+  LoaderParser,
+  LoaderParserPriority,
+} from "pixi.js";
 import path from "path-browserify";
 import { ImageLayer } from "./ImageLayer";
 import { TileLayer } from "./TileLayer";
 import { TileSet } from "./TileSet";
 import { ITMXData } from "./types/interfaces";
 
-export class TiledMap extends PIXI.Container {
-  static loaderParser: PIXI.LoaderParser<TiledMap> = {
+export class TiledMap extends Container {
+  static loaderParser: LoaderParser<TiledMap> = {
+    name: "Tiled Map Loader Parser",
     extension: {
       name: "Tiled Map Loader Parser",
-      priority: PIXI.LoaderParserPriority.Normal,
-      type: PIXI.ExtensionType.LoadParser,
+      priority: LoaderParserPriority.Normal,
+      type: ExtensionType.LoadParser,
     },
     test(url: string) {
       return url.endsWith(".tiled.json");
     },
     async load(url: string) {
-      const response = await PIXI.settings.ADAPTER.fetch(url);
+      const response = await BrowserAdapter.fetch(url);
       const mapData = await response.json();
-      const route = path.dirname(url);
-      return new TiledMap(mapData, route) as any;
+      return await TiledMap.from(mapData, url);
     },
   };
 
   public tileSets: TileSet[] = [];
-  public layers: { [name: string]: PIXI.Container } = {};
+  public layers: { [name: string]: Container } = {};
   public collisionLayer?: TileLayer;
 
-  constructor(public data: ITMXData, public route: string) {
+  private constructor(public data: ITMXData) {
     super();
 
     this.width = this.data.tilewidth * this.data.width;
     this.height = this.data.tileheight * this.data.height;
-    this.create();
   }
 
-  public create() {
-    const bgColor = this.data?.backgroundcolor;
+  public static async from(data: ITMXData, url: string) {
+    const baseUrl = path.dirname(url);
+    const map = new TiledMap(data);
+    let promises: Promise<any>[] = [];
+
+    // replace all image properties with full path
+    data.tilesets.forEach((tileset) => {
+      if (tileset.image) {
+        tileset.image = path.join(baseUrl, tileset.image);
+      }
+    });
+    data.layers.forEach((layer) => {
+      if (layer.image) {
+        layer.image = path.join(baseUrl, layer.image);
+      }
+    });
+
+    // Add background
+    const bgColor = map.data.backgroundcolor;
     if (bgColor) {
       // Draw background color
-      const background = new PIXI.Graphics();
-      background.beginFill(
-        new PIXI.Color(this.data?.backgroundcolor ?? "#0").toHex(),
-      );
-      background.drawRect(0, 0, this.width, this.height);
-      background.endFill();
-      this.addChild(background);
+      const background = new Graphics();
+      background
+        .rect(0, 0, map.width, map.height)
+        .fill(new Color(map.data.backgroundcolor ?? "#0").toHex());
+      map.addChild(background);
     }
 
     // Parse tilesets
-    this.data.tilesets.forEach((tileSet) => {
-      this.tileSets.push(new TileSet(tileSet, this.route));
+    promises = map.data.tilesets.map(async (i) => {
+      map.tileSets.push(await TileSet.from(i));
     });
+    await Promise.all(promises);
 
     // Parse layers
-    this.data.layers.forEach((layerData) => {
-      switch (layerData.type) {
+    promises = map.data.layers.map(async (i) => {
+      switch (i.type) {
         case "tilelayer": {
-          if (layerData.name === "Collisions") {
+          if (i.name === "Collisions") {
             // Treat collision layer specially
-            this.collisionLayer = new TileLayer(
-              layerData,
-              this.data,
-              this.tileSets,
-              true
-            );
+            map.collisionLayer = new TileLayer(i, map.data, map.tileSets, true);
           } else {
-            const tileLayer = new TileLayer(
-              layerData,
-              this.data,
-              this.tileSets
-            );
-            this.layers[layerData.name] = tileLayer;
-            this.addChild(tileLayer);
+            const tileLayer = new TileLayer(i, map.data, map.tileSets);
+            map.layers[i.name] = tileLayer;
+            map.addChild(tileLayer);
           }
           break;
         }
         case "imagelayer": {
-          const imageLayer = new ImageLayer(layerData, this.route);
-          this.layers[layerData.name] = imageLayer;
-          this.addChild(imageLayer);
+          const imageLayer = await ImageLayer.from(i);
+          map.layers[i.name] = imageLayer;
+          map.addChild(imageLayer);
           break;
         }
       }
     });
+    await Promise.all(promises);
+
+    return map;
   }
 }

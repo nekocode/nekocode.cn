@@ -1,29 +1,32 @@
-import * as PIXI from "pixi.js";
+import { Assets, FrameObject, Rectangle, Texture } from "pixi.js";
 import { ITileSetData } from "./types/interfaces";
 import { Tile } from "./Tile";
 
 export class TileSet {
-  private baseTexture: PIXI.BaseTexture;
   private tiles: Tile[];
 
-  constructor(public data: ITileSetData, route: string) {
-    this.baseTexture = PIXI.BaseTexture.from(route + "/" + data.image);
+  public static async from(data: ITileSetData) {
+    const image = await Assets.load(data.image);
+    return new TileSet(data, image);
+  }
+
+  private constructor(public data: ITileSetData, image: Texture) {
     this.tiles = [];
 
     // Split to tile textures
     const margin = data.margin ?? 0;
     const spacing = data.spacing ?? 0;
-    const textures: PIXI.Texture[] = [];
+    const textures: Texture[] = [];
     for (let y = margin; y < data.imageheight; y += data.tileheight + spacing) {
       for (let x = margin; x < data.imagewidth; x += data.tilewidth + spacing) {
-        const rect = new PIXI.Rectangle(x, y, data.tilewidth, data.tileheight);
-        textures.push(new PIXI.Texture(this.baseTexture, rect));
+        const rect = new Rectangle(x, y, data.tilewidth, data.tileheight);
+        textures.push(new Texture({ source: image.source, frame: rect }));
       }
     }
 
     // Transform to tile objects/sprites
     for (let id = 0; id < textures.length; id++) {
-      const frames: PIXI.FrameObject[] = [];
+      const frames: FrameObject[] = [];
       const animation = data.tiles?.find((tile) => tile.id === id)?.animation;
       if (animation != null && animation.length > 0) {
         for (const frame of animation) {

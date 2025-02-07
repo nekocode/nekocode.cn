@@ -1,12 +1,12 @@
-import * as PIXI from "pixi.js";
+import { AnimatedSprite, DEG_TO_RAD, FrameObject } from "pixi.js";
 import { TileSet } from "./TileSet";
 
-export class Tile extends PIXI.AnimatedSprite {
+export class Tile extends AnimatedSprite {
   constructor(
     public id: number,
     public gid: number,
     public tileSet: TileSet,
-    private frames: PIXI.FrameObject[],
+    private frames: FrameObject[],
     public horizontalFlip: boolean = false,
     public verticalFlip: boolean = false,
     public diagonalFlip: boolean = false
@@ -49,7 +49,7 @@ export class Tile extends PIXI.AnimatedSprite {
         this.anchor.y = 1;
         this.scale.y = 1;
 
-        this.rotation = PIXI.DEG_TO_RAD * 90;
+        this.rotation = DEG_TO_RAD * 90;
       }
       if (this.verticalFlip) {
         this.anchor.x = 1;
@@ -57,7 +57,7 @@ export class Tile extends PIXI.AnimatedSprite {
         this.anchor.y = 0;
         this.scale.y = 1;
 
-        this.rotation = PIXI.DEG_TO_RAD * -90;
+        this.rotation = DEG_TO_RAD * -90;
       }
     }
   }

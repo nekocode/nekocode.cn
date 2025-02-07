@@ -1,39 +1,47 @@
-import * as PIXI from "pixi.js";
+import {
+  Application,
+  Container,
+  FederatedPointerEvent,
+  Graphics,
+  Point,
+  Rectangle,
+  Sprite,
+  Texture,
+  Ticker,
+} from "pixi.js";
 import * as PF from "pathfinding";
 import { Character, Direction } from "./Character";
 import { TiledMap, TileLayer } from "../tiled";
 import { Dialog } from "./Dialog";
 
 export class Game {
-  private body: PIXI.Container;
-  private ui: PIXI.Container;
+  private body: Container;
+  private ui: Container;
 
   private me: Character;
   private bubbleLayer: TileLayer;
 
   // Mouse related
-  private cursor: PIXI.Sprite;
-  private hover: PIXI.Graphics;
-  private selection: PIXI.Graphics;
+  private cursor: Sprite;
+  private hover: Graphics;
+  private selection: Graphics;
 
   // Path finding related
   private pfGrid: PF.Grid;
   private pf = new PF.AStarFinder();
 
-  constructor(private app: PIXI.Application, private map: TiledMap) {
-    app.ticker.add((delta) => this.update(delta));
-
+  constructor(private app: Application, private map: TiledMap) {
     // Create containers
-    this.body = new PIXI.Container();
-    this.ui = new PIXI.Container();
+    this.body = new Container();
+    this.ui = new Container();
     app.stage.addChild(this.body);
     app.stage.addChild(this.ui);
 
     // Map related
     this.pfGrid =
       map.collisionLayer?.getPFGrid() ?? new PF.Grid(map.width, map.height);
-    map.eventMode = 'static';
-    map.on("pointertap", (event: PIXI.FederatedPointerEvent) => {
+    map.eventMode = "static";
+    map.on("pointertap", (event: FederatedPointerEvent) => {
       const pos = this.positionInRoot(this.getMousePosition(event));
       const { tileX, tileY } = this.toTilePosition(pos);
 
@@ -55,7 +63,7 @@ export class Game {
         this.me.setMovementPath(path);
       }
     });
-    map.on("pointermove", (event: PIXI.FederatedPointerEvent) => {
+    map.on("pointermove", (event: FederatedPointerEvent) => {
       const pos = this.positionInRoot(this.getMousePosition(event));
       const { tileX, tileY } = this.toTilePosition(pos);
 
@@ -78,13 +86,8 @@ export class Game {
 
       // Setup interaction
       const offset = tile.tileSet.data.tileoffset ?? { x: 0, y: 0 };
-      tile.eventMode = 'static';
-      tile.hitArea = new PIXI.Rectangle(
-        0,
-        0,
-        tile.width,
-        tile.height - offset.y
-      );
+      tile.eventMode = "static";
+      tile.hitArea = new Rectangle(0, 0, tile.width, tile.height - offset.y);
       tile.on("pointertap", async () => {
         // Change direction of me
         if (this.me.x < tile.x) {
@@ -98,9 +101,9 @@ export class Game {
         }
 
         // Show dialog
-        this.map.eventMode = 'none';
+        this.map.eventMode = "none";
         const tilePos = this.toTilePosition(
-          new PIXI.Point(tile.x - offset.x + 1, tile.y - offset.y + 1)
+          new Point(tile.x - offset.x + 1, tile.y - offset.y + 1)
         );
         if (tilePos.tileX == 15 && tilePos.tileY == 12) {
           await new Dialog(
@@ -128,22 +131,16 @@ export class Game {
             "小岛还在装修中，欢迎常来看看！"
           ).show(this.ui);
         }
-        this.map.eventMode = 'static';
+        this.map.eventMode = "static";
       });
     });
 
     // Mouse related
-    const layer1 = map.getChildAt(1) as PIXI.Container;
-    this.hover = new PIXI.Graphics();
-    this.hover.beginFill(0x000000);
-    this.hover.drawRoundedRect(
-      0,
-      0,
-      map.data.tilewidth,
-      map.data.tileheight,
-      4
-    );
-    this.hover.endFill();
+    const layer1 = map.getChildAt(1) as Container;
+    this.hover = new Graphics();
+    this.hover
+      .roundRect(0, 0, map.data.tilewidth, map.data.tileheight, 4)
+      .fill(0x000000);
     this.hover.alpha = 0.2;
     layer1.addChild(this.hover);
 
@@ -152,25 +149,33 @@ export class Game {
     this.selection.visible = false;
     layer1.addChild(this.selection);
 
-    this.cursor = PIXI.Sprite.from("texCursor");
+    this.cursor = Sprite.from("texCursor");
     app.stage.addChild(this.cursor);
 
     // Character related
     this.me = Character.new({
-      baseTexture: PIXI.BaseTexture.from("texMe"),
+      baseTexture: Texture.from("texMe"),
       characterWidth: 32,
       characterHeight: 32,
       map: map,
-      tilePosition: new PIXI.Point(13, 11),
+      tilePosition: new Point(13, 11),
     });
     layer1.addChild(this.me);
   }
 
-  public update(_: number) {
+  public start() {
+    this.app.ticker.add(this.update);
+  }
+
+  public stop() {
+    this.app.ticker.remove(this.update);
+  }
+
+  public update = (_: Ticker) => {
     this.updateCamera();
     this.updateMouse();
     this.updateBubbles();
-  }
+  };
 
   private updateCamera() {
     const pos = this.me.getActualPosition();
@@ -233,21 +238,19 @@ export class Game {
     return this.app.renderer.height / this.app.stage.scale.y;
   }
 
-  private getMousePosition(event?: PIXI.FederatedPointerEvent) {
-    const { x, y } = event ?? this.app.renderer.events.pointer ?? { x: 0, y: 0};
-    return new PIXI.Point(
-      x / this.app.stage.scale.x,
-      y / this.app.stage.scale.y
-    );
+  private getMousePosition(event?: FederatedPointerEvent) {
+    const { x, y } = event ??
+      this.app.renderer.events.pointer ?? { x: 0, y: 0 };
+    return new Point(x / this.app.stage.scale.x, y / this.app.stage.scale.y);
   }
 
-  private positionInRoot(pos: PIXI.Point) {
+  private positionInRoot(pos: Point) {
     const xInRoot = pos.x - this.body.position.x + this.body.pivot.x;
     const yInRoot = pos.y - this.body.position.y + this.body.pivot.y;
-    return new PIXI.Point(xInRoot, yInRoot);
+    return new Point(xInRoot, yInRoot);
   }
 
-  private toTilePosition(pos: PIXI.Point) {
+  private toTilePosition(pos: Point) {
     const tileX = Math.floor(pos.x / this.map.data.tilewidth);
     const tileY = Math.floor(pos.y / this.map.data.tileheight);
     return { tileX, tileY };

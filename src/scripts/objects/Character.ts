@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+import { AnimatedSprite, Point, Rectangle, Texture, Ticker } from "pixi.js";
 import { TiledMap } from "../tiled";
 
 export enum Direction {
@@ -8,28 +8,33 @@ export enum Direction {
   up = 3,
 }
 
-export class Character extends PIXI.AnimatedSprite {
+export class Character extends AnimatedSprite {
   public static new(args: {
-    baseTexture: PIXI.BaseTexture;
+    baseTexture: Texture;
     characterWidth: number;
     characterHeight: number;
     map: TiledMap;
-    tilePosition: PIXI.Point;
+    tilePosition: Point;
   }): Character {
     // Generate four directions of animation textures
-    const genTextures = (line: number): PIXI.Texture[] => {
-      const textures: PIXI.Texture[] = [];
+    const genTextures = (line: number): Texture[] => {
+      const textures: Texture[] = [];
       const y = line * args.characterHeight;
       // Right to left
       for (let column = 3; column >= 0; column--) {
         const x = column * args.characterWidth;
-        const rect = new PIXI.Rectangle(
+        const rect = new Rectangle(
           x,
           y,
           args.characterWidth,
           args.characterHeight
         );
-        textures.push(new PIXI.Texture(args.baseTexture, rect));
+        textures.push(
+          new Texture({
+            source: args.baseTexture.source,
+            frame: rect,
+          })
+        );
       }
       return textures;
     };
@@ -50,15 +55,15 @@ export class Character extends PIXI.AnimatedSprite {
   private movementPath: [number, number][] = [];
   private lastFrame = 0;
   private needStop = false;
-  public nextTilePos: PIXI.Point;
+  public nextTilePos: Point;
 
   private constructor(
     private animations: {
-      [key in Direction]: PIXI.Texture[];
+      [key in Direction]: Texture[];
     },
     private direction: Direction,
     private map: TiledMap,
-    private tilePosition: PIXI.Point
+    private tilePosition: Point
   ) {
     super(animations[direction]);
     this.nextTilePos = tilePosition;
@@ -68,8 +73,8 @@ export class Character extends PIXI.AnimatedSprite {
     this.loop = true;
   }
 
-  public update(deltaTime: number) {
-    super.update(deltaTime);
+  public update(ticker: Ticker) {
+    super.update(ticker);
 
     // If need stop, stop at frame 0
     if (this.needStop && this.currentFrame == 0) {
@@ -111,8 +116,8 @@ export class Character extends PIXI.AnimatedSprite {
     this.position = this.getActualPosition();
   }
 
-  public getActualPosition(): PIXI.Point {
-    return new PIXI.Point(
+  public getActualPosition(): Point {
+    return new Point(
       this.tilePosition.x * this.map.data.tilewidth,
       this.tilePosition.y * this.map.data.tileheight
     );
@@ -137,7 +142,7 @@ export class Character extends PIXI.AnimatedSprite {
     if (this.setDirection(nextDirection)) {
       this.gotoAndPlay(1);
     }
-    this.nextTilePos = new PIXI.Point(nextTilePos[0], nextTilePos[1]);
+    this.nextTilePos = new Point(nextTilePos[0], nextTilePos[1]);
   }
 
   public setDirection(direction: Direction) {

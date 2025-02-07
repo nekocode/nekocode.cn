@@ -1,10 +1,10 @@
-import * as PIXI from "pixi.js";
+import { Container, Texture } from "pixi.js";
 import * as PF from "pathfinding";
 import { Tile } from "./Tile";
 import { TileSet } from "./TileSet";
 import { ILayerData, ITMXData } from "./types/interfaces";
 
-export class TileLayer extends PIXI.Container {
+export class TileLayer extends Container {
   private gids: number[] = [];
   private horizontalFlips: boolean[] = [];
   private verticalFlips: boolean[] = [];
@@ -80,8 +80,7 @@ export class TileLayer extends PIXI.Container {
             tile.x = x * this.mapData.tilewidth;
             tile.y =
               y * this.mapData.tileheight +
-              (this.mapData.tileheight -
-                (tile.textures[0] as PIXI.Texture).height);
+              (this.mapData.tileheight - (tile.textures[0] as Texture).height);
 
             // Add offset of tileset
             const offset = tileSet.data.tileoffset;

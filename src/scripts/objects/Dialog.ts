@@ -1,17 +1,26 @@
-import * as PIXI from "pixi.js";
+import {
+  Application,
+  CanvasTextMetrics,
+  Container,
+  FederatedEvent,
+  Graphics,
+  Rectangle,
+  Text,
+  TextStyle,
+} from "pixi.js";
 
 const PAD = 0.02;
 const HEIGHT = 0.3;
 const FONT_SIZE = 0.05;
 
-export class Dialog extends PIXI.Container {
-  private bg: PIXI.Graphics;
-  private titleText: PIXI.Text;
-  private contentText: PIXI.Text;
+export class Dialog extends Container {
+  private bg: Graphics;
+  private titleText: Text;
+  private contentText: Text;
   private itemMenu?: ItemMenu;
 
   public constructor(
-    private app: PIXI.Application,
+    private app: Application,
     private title: string,
     private content: string,
     private items: string[] = []
@@ -21,15 +30,15 @@ export class Dialog extends PIXI.Container {
     this.bg = createBg();
     this.addChild(this.bg);
 
-    this.titleText = new PIXI.Text(this.title);
+    this.titleText = new Text({ text: this.title });
     this.titleText.anchor.set(0, 1);
     this.addChild(this.titleText);
 
-    this.contentText = new PIXI.Text(this.content);
+    this.contentText = new Text({ text: this.content });
     this.addChild(this.contentText);
   }
 
-  public show(container: PIXI.Container): Promise<number> {
+  public show(container: Container): Promise<number> {
     return new Promise<number>((resolve: (value: number) => void) => {
       container.addChild(this);
       const onResize = () => {
@@ -50,19 +59,19 @@ export class Dialog extends PIXI.Container {
       }
       this.update(this.getWidth(), this.getHeight());
 
-      this.eventMode = 'static';
-      this.on("pointertap", (_: PIXI.FederatedEvent) => {
+      this.eventMode = "static";
+      this.on("pointertap", (_: FederatedEvent) => {
         exit(-1);
       });
     });
   }
 
   private update(screenWidth: number, screenHeight: number) {
-    this.hitArea = new PIXI.Rectangle(0, 0, screenWidth, screenHeight);
+    this.hitArea = new Rectangle(0, 0, screenWidth, screenHeight);
 
     const y = screenHeight * (1 - HEIGHT);
     const pad = screenHeight * PAD;
-    const textStyle = new PIXI.TextStyle({
+    const textStyle = new TextStyle({
       fill: "#fff",
       fontSize: Math.max(screenHeight * FONT_SIZE, 14),
       breakWords: true,
@@ -74,11 +83,11 @@ export class Dialog extends PIXI.Container {
     this.bg.height = screenHeight * HEIGHT;
     this.bg.y = y;
 
-    this.titleText.style = new PIXI.TextStyle(textStyle);
+    this.titleText.style = new TextStyle(textStyle);
     this.titleText.x = pad;
     this.titleText.y = y - pad;
 
-    this.contentText.style = new PIXI.TextStyle(textStyle);
+    this.contentText.style = new TextStyle(textStyle);
     this.contentText.x = pad;
     this.contentText.y = y + pad;
 
@@ -94,9 +103,9 @@ export class Dialog extends PIXI.Container {
   }
 }
 
-class ItemMenu extends PIXI.Container {
-  private bg: PIXI.Graphics;
-  private itemTexts: PIXI.Text[] = [];
+class ItemMenu extends Container {
+  private bg: Graphics;
+  private itemTexts: Text[] = [];
 
   public constructor(items: string[] = [], onItemTap: (index: number) => void) {
     super();
@@ -105,11 +114,11 @@ class ItemMenu extends PIXI.Container {
     this.addChild(this.bg);
 
     for (let i = 0; i < items.length; i++) {
-      const text = new PIXI.Text(items[i]);
+      const text = new Text(items[i]);
       text.anchor.set(0.5, 0);
 
       // Interaction
-      text.eventMode = 'static';
+      text.eventMode = "static";
       text.on("pointertap", () => {
         onItemTap(i);
       });
@@ -123,7 +132,7 @@ class ItemMenu extends PIXI.Container {
     const pad = screenHeight * PAD;
     const width = Math.max(screenWidth * 0.3, 120);
 
-    const textStyle = new PIXI.TextStyle({
+    const textStyle = new TextStyle({
       fill: "#fff",
       align: "center",
       fontSize: Math.max(screenHeight * FONT_SIZE, 14),
@@ -133,15 +142,15 @@ class ItemMenu extends PIXI.Container {
     });
 
     let height = pad;
-    let textMetrics: PIXI.TextMetrics;
+    let textMetrics: CanvasTextMetrics;
     for (const text of this.itemTexts) {
       text.style = textStyle;
       text.x = width / 2;
       text.y = height;
 
-      textMetrics = PIXI.TextMetrics.measureText(text.text, textStyle);
+      textMetrics = CanvasTextMetrics.measureText(text.text, textStyle);
       height += textMetrics.height + pad;
-      text.hitArea = new PIXI.Rectangle(-width / 2, -pad, width, screenHeight);
+      text.hitArea = new Rectangle(-width / 2, -pad, width, screenHeight);
     }
 
     this.bg.width = width;
@@ -155,10 +164,8 @@ class ItemMenu extends PIXI.Container {
 }
 
 function createBg() {
-  const bg = new PIXI.Graphics();
-  bg.beginFill(0x000000);
-  bg.drawRect(0, 0, 1, 1);
-  bg.endFill();
+  const bg = new Graphics();
+  bg.rect(0, 0, 1, 1).fill(0x000000);
   bg.alpha = 0.5;
   return bg;
 }
