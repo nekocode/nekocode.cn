@@ -15,6 +15,7 @@ import { ITMXData } from "./types/interfaces";
 
 export class TiledMap extends Container {
   static loaderParser: LoaderParser<TiledMap> = {
+    id: "tiled-map-loader-parser",
     name: "Tiled Map Loader Parser",
     extension: {
       name: "Tiled Map Loader Parser",
